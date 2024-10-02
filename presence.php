@@ -9,7 +9,7 @@ if(trim(isset ($_POST['agent'])&& !empty($_POST['agent']))){
     $agent = $_POST['agent'];
     $status = $_POST['status'];
 
-    $req = "SELECT * FROM agent WHERE id_agent = '$agent'";
+    $req = "SELECT * FROM agent WHERE id_agent = '$agent' AND status='actif'";
     $query = $conn->query($req);
 
     if($query->num_rows > 0){

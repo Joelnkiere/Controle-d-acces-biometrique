@@ -1,5 +1,6 @@
 <?php include 'includes/session.php'; ?>
 <?php include 'includes/header.php'; ?>
+
 <body class="hold-transition skin-black sidebar-mini">
 <div class="wrapper">
 
@@ -16,7 +17,7 @@
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Accueil</a></li>
         <li>Agents</li>
-        <li class="active">Liste Agents</li>
+        <li class="actif">Liste Agents</li>
       </ol>
     </section>
     <!-- Main content -->
@@ -82,6 +83,9 @@
                             <button class="btn btn-primary btn-sm detail btn-flat"data-id="<?php echo $row['empid'];?>"><i class="fa fa-eye"></i></button>
                             <button class="btn  btn-sm modifier btn-flat" data-id="<?php echo $row['empid']; ?>"><i class="fa fa-edit"></i></button>
                             <button class="btn btn-danger btn-sm supprimer btn-flat" data-id="<?php echo $row['empid']; ?>"><i class="fa fa-trash"></i></button>
+                            <button class="btn toggle-status btn-flat <?php echo ($row['status'] == 'actif') ? 'btn-success' : 'btn-danger'; ?>" data-id="<?php echo $row['empid']; ?>" data-status="<?php echo $row['status']; ?>">
+        <i class="fa <?php echo ($row['status'] == 'actif') ? 'fa-toggle-on' : 'fa-toggle-off'; ?>"></i>
+    </button>
                           </td>
                         </tr>
                       <?php
@@ -178,6 +182,41 @@ function getRow(id){
     }
   });
 }
+
+$('.toggle-status').click(function(e){
+    e.preventDefault();
+    var id = $(this).data('id');
+    var status = $(this).data('status');
+    
+    // Changer l'état
+    var newStatus = (status == 'actif') ? 'inactif' : 'actif';
+    
+    $.ajax({
+        type: 'POST',
+        url: 'toggle_agent_status.php', // Le fichier PHP qui gère la mise à jour
+        data: {id: id, status: newStatus},
+        dataType: 'json',
+        success: function(response){
+            if(response.success){
+                // Mettre à jour l'icône et le statut du bouton
+                if(newStatus == 'actif'){
+                    $('.toggle-status[data-id="'+id+'"] i').removeClass('fa-toggle-off').addClass('fa-toggle-on');
+                    $('.toggle-status[data-id="'+id+'"]').data('status', 'actif');
+                    $('.toggle-status[data-id="'+id+'"]').removeClass('btn-danger').addClass('btn-success'); // Changer la couleur en vert
+                } else {
+                    $('.toggle-status[data-id="'+id+'"] i').removeClass('fa-toggle-on').addClass('fa-toggle-off');
+                    $('.toggle-status[data-id="'+id+'"]').data('status', 'inactif');
+                    $('.toggle-status[data-id="'+id+'"]').removeClass('btn-success').addClass('btn-danger'); // Changer la couleur en rouge
+                }
+            } else {
+                alert('Erreur lors de la mise à jour du statut.');
+            }
+        }
+    });
+});
+
+
+
 
 </script>
 </body>
