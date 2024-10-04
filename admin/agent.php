@@ -1,6 +1,6 @@
 <?php include 'includes/session.php'; ?>
 <?php include 'includes/header.php'; ?>
-
+<style> </style>
 <body class="hold-transition skin-black sidebar-mini">
 <div class="wrapper">
 
@@ -80,6 +80,7 @@
                           <td><?php echo $row['nom_service'];?></td>
                           
                           <td>
+                          <button class="btn btn-info btn-sm print-card btn-flat" data-id="<?php echo $row['empid']; ?>"><i class="fa fa-print"></i></button>
                             <button class="btn btn-primary btn-sm detail btn-flat"data-id="<?php echo $row['empid'];?>"><i class="fa fa-eye"></i></button>
                             <button class="btn  btn-sm modifier btn-flat" data-id="<?php echo $row['empid']; ?>"><i class="fa fa-edit"></i></button>
                             <button class="btn btn-danger btn-sm supprimer btn-flat" data-id="<?php echo $row['empid']; ?>"><i class="fa fa-trash"></i></button>
@@ -216,8 +217,81 @@ $('.toggle-status').click(function(e){
 });
 
 
+</script>
 
 
+
+
+
+<script src="../bower_components/moment/qrcode.js"></script> <!-- Le fichier que tu auras téléchargé -->
+
+
+
+<script>
+     
+    function generateQRCode(agentData) {
+        // Convertir les informations de l'agent en chaîne JSON
+        const agentInfo = JSON.stringify({
+          id: agentData.id_agent,
+            nom: agentData.nom,
+            prenom: agentData.prenom,
+            adresse: agentData.adresse,
+            telephone: agentData.telephone_agent,
+            sexe: agentData.sexe_agent,
+            direction: agentData.direction_agent,
+            service: agentData.service_agent,
+            date_naissance: agentData.date_naissance_agent
+            
+        });
+
+        // Générer le QR code dans le div "agentQRCode"
+        new QRCode(document.getElementById("agentQRCode"), {
+            text: agentInfo,
+            width: 70,
+            height: 70
+        });
+    }
+
+    $('.print-card').click(function(e){
+        e.preventDefault();
+        var id = $(this).data('id');
+
+        // Récupérer les détails de l'agent
+        $.ajax({
+            type: 'POST',
+            url: 'ligne_agent.php',
+            data: {id: id},
+            dataType: 'json',
+            success: function(response){
+              $('#agentPhoto').attr('src', '../images/' + response.photo);
+                $('.id_agent').html(response.id_agent);
+                $('.nom_agent').html(response.nom +' '+ response.prenom);
+                $('.adresse_agent').html(response.adresse);
+                $('.date_naissance_agent').html(response.date_naissance);
+                $('.telephone_agent').html(response.telephone);
+                $('.sexe_agent').html(response.sexe);
+                $('.direction_agent').html(response.libelle);
+                $('.service_agent').html(response.nom_service);
+                $('.horaire_agent').html(response.heure_entree + ' - ' + response.heure_sortie);
+
+                // Générer le QR code avec toutes les informations de l'agent
+                generateQRCode(response);
+
+                // Afficher le modal
+                $('#printCardModal').modal('show');
+            }
+        });
+    });
+
+    // Fonction pour imprimer la carte
+    $('#printCardButton').click(function(){
+        var printContents = document.getElementById('cardContent').innerHTML;
+        var originalContents = document.body.innerHTML;
+
+        document.body.innerHTML = printContents;
+        window.print();
+        document.body.innerHTML = originalContents;
+    });
 </script>
 </body>
 </html>

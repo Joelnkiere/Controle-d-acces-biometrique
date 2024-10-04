@@ -447,7 +447,7 @@
             <p><strong>Date de naissance:</strong> <span class="date_naissance_agent"></span></p>
             <p><strong>Téléphone:</strong> <span class="telephone_agent"></span></p>
             <p><strong>Sexe:</strong> <span class="sexe_agent"></span></p>
-            <p><strong>Direction:</strong> <span class="direction_agent"></span></p>
+            <p><strong>Direction:</strong> <span class="direction_agent"></span></p>   
             <p><strong>Service:</strong> <span class="service_agent"></span></p>
             <p><strong>Horaire:</strong> <span class="horaire_agent"></span></p>
           </div>
@@ -468,4 +468,88 @@
   font-size: 1.2em; /* Augmente la taille de la police */
 }
 
+</style>
+
+<!-- Modal pour imprimer la carte -->
+<div id="printCardModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document"> <!-- Modal large -->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Carte de Service</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" style="background-color: #F2F5FA; padding: 5;">
+                <!-- Ajout d'un max-width et max-height pour que la carte ne dépasse pas le modal -->
+                <div id="cardContent" style="width: 100%; max-width: 600px; height: 100%; max-height: 350px; position: relative; background-color: white; margin: 0 auto; border: 1px solid #ccc;">
+
+                    <!-- Bandeau supérieur avec le logo et l'en-tête -->
+                    <div style="background-color: #1E4597; color: white; padding: 10px; text-align: center;">
+                        <img src="../images/logo.png" alt="Logo Alpha-Romeo" style="width: 80px; vertical-align: middle;">
+                        <h2 style="display: inline-block; margin-left: 10px;">BANQUE CENTRALE DU CONGO</h2>
+                    </div>
+
+                    <!-- Section principale avec la photo et les informations -->
+                    <div style="display: flex; padding: 10px; align-items: center;">
+                        <!-- Photo de l'agent -->
+                        <div style="flex: 1; text-align: center;">
+                            <img id="agentPhoto" src="" alt="Photo Agent" style="width: 100px; height: 100px; object-fit: cover; border: 2px solid #1E4597; margin: 1px;">
+                            
+                            <!--<canvas id="agentBarcode" style="width: 120px; height: 50px;"></canvas>-->
+                            <div id="agentQRCode" style="width: 50px; height: 50px; margin: 1px;"></div>
+                        </div>
+
+                        <!-- Informations de l'agent -->
+                        <div style="flex: 2;">
+                            <h3 style="margin: 0; color: #1E4597; font-weight: bold;"><strong>Matricule: </strong><span class="id_agent"></span></h3>
+                            <p style="line-height: 1.2; margin: 2px 0;"><strong>Nom:</strong> <span class="nom_agent"></span></p>
+                            
+                            <p style="margin: 2px 0; line-height: 1.2;"><strong>Adresse:</strong> <span class="adresse_agent"></span></p>
+                            <p style="margin: 2px 0; line-height: 1.2;"><strong>Date de naissance:</strong> <span class="date_naissance_agent"></span></p>
+                            <p style="margin: 2px 0; line-height: 1.2;"><strong>Téléphone:</strong> <span class="telephone_agent"></span></p>
+                            <p style="margin: 2px 0; line-height: 1.2;"><strong>Sexe:</strong> <span class="sexe_agent"></span></p>
+                            <p style="margin: 2px 0; line-height: 1.2;"><strong>Direction:</strong> <span class="direction_agent"></span></p>   
+                            <p style="margin: 2px 0; line-height: 1.2;"><strong>Service:</strong> <span class="service_agent"></span></p>
+                        </div>
+                    </div>
+
+                    <!-- Bandeau inférieur avec les informations de contact -->
+                    <div style="background-color: #1E4597; color: white; padding: 10px; text-align: center; width: 100%; box-sizing: border-box;">
+                        <p style="margin: 0;">Contact: +243 825930444 | Email: aromeoofficiel@gmail.com</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                <button type="button" class="btn btn-primary" id="printCardButton">Imprimer</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Styles pour l'impression afin de conserver le design -->
+<style>
+    @media print {
+        body * {
+            visibility: hidden;
+        }
+        #printCardModal, #printCardModal * {
+            visibility: visible;
+        }
+        #printCardModal {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #cardContent {
+            border: 1px solid #ccc;
+            background-color: white;
+        }
+    }
 </style>
