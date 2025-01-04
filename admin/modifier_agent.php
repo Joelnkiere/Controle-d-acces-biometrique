@@ -12,9 +12,10 @@
 		$sexe = $_POST['sexe'];
 		$direction = $_POST['direction'];
 		$service=$_POST['service'];
+		$poste=$_POST['poste'];
 		$horaire = $_POST['horaire'];
 		
-		$sql = "UPDATE agent SET prenom = '$prenom', nom = '$nom', adresse = '$adresse', date_naissance = '$date_naissance', telephone = '$telephone', sexe = '$sexe', id_direction = '$direction', id_horaire = '$horaire', id_service='$service' WHERE id = '$empid'";
+		$sql = "UPDATE agent SET prenom = '$prenom', nom = '$nom', adresse = '$adresse', date_naissance = '$date_naissance', telephone = '$telephone', sexe = '$sexe', id_direction = '$direction', id_horaire = '$horaire', id_service='$service', id_poste='$poste' WHERE id = '$empid'";
 		if($conn->query($sql)){
 			$_SESSION['success'] = 'information modifiée avec succes!';
 		}

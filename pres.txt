@@ -1,0 +1,61 @@
+<?php
+if (isset($_POST['agent']) && !empty(trim($_POST['agent']))) {
+    $affichage = array('error' => false);
+
+    // Récupérer les données POST
+    $agent = $_POST['agent'];
+    $status = $_POST['status'];
+
+    // URL de l'API
+    $apiUrl = 'http://localhost/php-api-master/mark-presence';
+
+    // Préparer les données à envoyer à l'API
+    $postData = array(
+        'employee_id' => $agent,
+        'status' => $status,
+        'timestamp' => date('Y-m-d H:i:s') // Ajouter l'heure actuelle
+    );
+
+    // Initialiser cURL
+    $ch = curl_init($apiUrl);
+
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($postData));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+        'Content-Type: application/json',
+        'Accept: application/json'
+    ));
+
+    // Exécuter la requête cURL
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+
+    // Vérifier la réponse de l'API
+    if ($httpCode === 200) {
+        $responseData = json_decode($response, true);
+
+        // Transférer les messages de l'API à l'application
+        if (isset($responseData['error']) && $responseData['error'] === true) {
+            $affichage['error'] = true;
+            $affichage['message'] = $responseData['message'] ?? 'Erreur inconnue.';
+        } else {
+            $affichage['message_code'] = $responseData['message_code'] ?? 'success';
+            $affichage['message'] = $responseData['message'] ?? 'Action réussie.';
+        }
+    } else {
+        // Gérer les erreurs de l'API
+        $affichage['error'] = true;
+        $affichage['message'] = 'Erreur lors de la communication avec l\'API.';
+    }
+} else {
+    $affichage = array(
+        'error' => true,
+        'message' => 'Aucun ID employé fourni.'
+    );
+}
+
+// Retourner la réponse JSON
+echo json_encode($affichage);
+?>

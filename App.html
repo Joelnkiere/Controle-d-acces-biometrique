@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Présence</title>
+    <script>
+        async function enregistrerPresence() {
+            const agent = document.getElementById('agent').value;
+            const status = document.getElementById('status').value;
+
+            const data = new FormData();
+            data.append('agent', agent);
+            data.append('status', status);
+
+            try {
+                const response = await fetch('http://localhost/Memoire/presence.php', {
+                    method: 'POST',
+                    body: data,
+                });
+
+                const result = await response.json();
+
+                if (result.error) {
+                    alert('Erreur: ' + result.message);
+                } else {
+                    alert('Succès: ' + result.message);
+                }
+            } catch (error) {
+                console.error('Erreur lors de l\'enregistrement:', error);
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>Gestion de Présence</h2>
+    <div>
+        <label for="status">Statut:</label>
+        <select id="status">
+            <option value="entrée">Entrée</option>
+            <option value="sortie">Sortie</option>
+        </select>
+    </div>
+    <div>
+        <label for="agent">ID de l'Agent:</label>
+        <input type="text" id="agent" placeholder="Entrer l'ID Agent">
+    </div>
+    <button onclick="enregistrerPresence()">Enregistrer</button>
+</body>
+</html>

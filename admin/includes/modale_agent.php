@@ -93,6 +93,26 @@
                       </select>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label for="poste" class="col-sm-3 control-label">Poste</label>
+
+                    <div class="col-sm-9">
+                      <select class="form-control" name="poste" id="poste" required>
+                        <option value="" selected>- Selectionner -</option>
+                        <?php
+                          $sql = "SELECT * FROM poste";
+                          $query = $conn->query($sql);
+                          while($prow = $query->fetch_assoc()){
+                            echo "
+                              <option value='".$prow['id_poste']."'>".$prow['titre']."</option>
+                            ";
+                          }
+                        ?>
+                      </select>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label for="horaire" class="col-sm-3 control-label">Horaire</label>
 
@@ -224,6 +244,26 @@
                       </select>
                     </div>
                 </div>
+
+                <div class="form-group">
+                    <label for="modifier_poste" class="col-sm-3 control-label">Poste</label>
+
+                    <div class="col-sm-9">
+                      <select class="form-control" name="poste" id="modifier_poste">
+                        <option selected id="poste_val"></option>
+                        <?php
+                          $sql = "SELECT * FROM poste";
+                          $query = $conn->query($sql);
+                          while($prow = $query->fetch_assoc()){
+                            echo "
+                              <option value='".$prow['id_poste']."'>".$prow['titre']."</option>
+                            ";
+                          }
+                        ?>
+                      </select>
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label for="modifier_horaire" class="col-sm-3 control-label">Horaire</label>
 
@@ -251,121 +291,6 @@
         </div>
     </div>
 </div>
-
-<!-- Modal de modification -->
-<!-- Modal de modification -->
-<!--<div class="modal fade" id="modifier" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Modifier l'agent</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <form id="modifier_form">
-          <input type="hidden" class="empid" name="empid">
-          
-          <div class="form-group">
-            <label for="modifier_prenom">Prénom</label>
-            <input type="text" class="form-control" id="modifier_prenom" name="modifier_prenom" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="modifier_nom">Nom</label>
-            <input type="text" class="form-control" id="modifier_nom" name="modifier_nom" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="modifier_adresse">Adresse</label>
-            <input type="text" class="form-control" id="modifier_adresse" name="modifier_adresse" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="modifier_date">Date de naissance</label>
-            <input type="date" class="form-control" id="modifier_date" name="modifier_date" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="modifier_telephone">Téléphone</label>
-            <input type="text" class="form-control" id="modifier_telephone" name="modifier_telephone" required>
-          </div>
-          
-          <div class="form-group">
-            <label for="sexe_val">Sexe</label>
-            <select class="form-control" name="sexe" id="modifier_sexe">
-                        <option selected id="sexe_val"></option>
-                        <option value="M">Homme</option>
-                        <option value="F">Femme</option>
-                      </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="direction_val">Direction</label>
-            <select class="form-control" name="direction" id="modifier_direction" required>
-                        <option selected id="direction_val"></option>
-                        <?php
-                          $sql = "SELECT * FROM direction";
-                          $query = $conn->query($sql);
-                          while($prow = $query->fetch_assoc()){
-                            echo "
-                              <option value='".$prow['id']."'>".$prow['libelle']."</option>
-                            ";
-                          }
-                        ?>
-                      </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="service_val">Service</label>
-            <select class="form-control" name="service" id="modifier_service" required>
-                        <option selected id="service_val"></option>
-                        <?php
-                          $sql = "SELECT * FROM service";
-                          $query = $conn->query($sql);
-                          while($srow = $query->fetch_assoc()){
-                            echo "
-                              <option data-direction='".$srow['id_direction']."' value='".$srow['id_service']."'>".$srow['nom_service']."</option>
-                            ";
-                          }
-                        ?>
-                      </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="horaire_val">Horaire</label>
-            <select class="form-control" id="modifier_horaire" name="horaire" required>
-                        <option selected id="horaire_val"></option>
-                        <?php
-                          $sql = "SELECT * FROM horaire";
-                          $query = $conn->query($sql);
-                          while($srow = $query->fetch_assoc()){
-                            echo "
-                              <option value='".$srow['id']."'>".$srow['heure_entree'].' - '.$srow['heure_sortie']."</option>
-                            ";
-                          }
-                        ?>
-                      </select>
-          </div>
-          
-          <div class="form-group">
-            <label for="modifier_photo">Photo</label>
-            <input type="file" class="form-control" id="modifier_photo" name="modifier_photo">
-            <small class="form-text text-muted">Choisissez une nouvelle photo si nécessaire.</small>
-          </div>
-          
-        </form>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
-        <button type="submit" name="modifier" class="btn btn-primary" form="modifier_form">Modifier</button>
-      </div>
-    </div>
-  </div>
-</div>-->
-
-
 
 <!-- Delete -->
 <div class="modal fade" id="supprimer">
@@ -449,6 +374,7 @@
             <p><strong>Sexe:</strong> <span class="sexe_agent"></span></p>
             <p><strong>Direction:</strong> <span class="direction_agent"></span></p>   
             <p><strong>Service:</strong> <span class="service_agent"></span></p>
+            <p><strong>Poste:</strong> <span class="poste_agent"></span></p>
             <p><strong>Horaire:</strong> <span class="horaire_agent"></span></p>
           </div>
         </div>
@@ -475,14 +401,14 @@
     <div class="modal-dialog modal-lg" role="document"> <!-- Modal large -->
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Carte de Service</h5>
+                <h5 class="modal-title">Impression de la Carte de Service</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body" style="background-color: #F2F5FA; padding: 5;">
                 <!-- Ajout d'un max-width et max-height pour que la carte ne dépasse pas le modal -->
-                <div id="cardContent" style="width: 100%; max-width: 600px; height: 100%; max-height: 350px; position: relative; background-color: white; margin: 0 auto; border: 1px solid #ccc;">
+                <div id="cardContent" style="width: 100%; max-width: 600px; height: 100%; max-height: 350px; poste: relative; background-color: white; margin: 0 auto; border: 1px solid #ccc;">
 
                     <!-- Bandeau supérieur avec le logo et l'en-tête -->
                     <div style="background-color: #1E4597; color: white; padding: 10px; text-align: center;">
@@ -511,6 +437,7 @@
                             <p style="margin: 2px 0; line-height: 1.2;"><strong>Sexe:</strong> <span class="sexe_agent"></span></p>
                             <p style="margin: 2px 0; line-height: 1.2;"><strong>Direction:</strong> <span class="direction_agent"></span></p>   
                             <p style="margin: 2px 0; line-height: 1.2;"><strong>Service:</strong> <span class="service_agent"></span></p>
+                            <p style="margin: 2px 0; line-height: 1.2;"><strong>Poste:</strong> <span class="poste_agent"></span></p>
                         </div>
                     </div>
 
@@ -539,7 +466,7 @@
             visibility: visible;
         }
         #printCardModal {
-            position: absolute;
+            poste: absolute;
             left: 0;
             top: 0;
             width: 100%;

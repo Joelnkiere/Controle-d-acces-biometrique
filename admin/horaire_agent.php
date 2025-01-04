@@ -11,7 +11,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Horaire Agent
+        Horaire
       </h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Accueil</a></li>
@@ -26,7 +26,7 @@
           echo "
             <div class='alert alert-danger alert-dismissible'>
               <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
-              <h4><i class='icon fa fa-warning'></i> Echec de l'operation!</h4>
+              <h4><i class='icon fa fa-warning'></i> Erreur de l'operation!</h4>
               ".$_SESSION['error']."
             </div>
           ";
@@ -36,7 +36,7 @@
           echo "
             <div class='alert alert-success alert-dismissible'>
               <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
-              <h4><i class='icon fa fa-check'></i> operatin reussie!</h4>
+              <h4><i class='icon fa fa-check'></i> operation reussie!</h4>
               ".$_SESSION['success']."
             </div>
           ";
@@ -47,27 +47,28 @@
         <div class="col-xs-12">
           <div class="box">
             <div class="box-header with-border">
-              <a href="#ajouter" data-toggle="modal" class="btn btn-primary btn-sm btn-flat"><i class="fa fa-plus"></i>Ajouter</a>
+              <a href="impression_horaire.php" class="btn btn-primary btn-sm btn-flat"><span class="glyphicon glyphicon-print"></span> Imprimer</a>
             </div>
             <div class="box-body">
               <table id="example1" class="table table-bordered">
                 <thead>
-                  <th>Heure Entrée</th>
-                  <th>Heure sortie</th>
+                  <th>ID Agent</th>
+                  <th>Nom</th>
+                  <th>Horaire</th>
                   <th>Action</th>
                 </thead>
                 <tbody>
                   <?php
-                    $sql = "SELECT * FROM horaire";
+                    $sql = "SELECT *, agent.id AS empid FROM agent LEFT JOIN horaire ON horaire.id=agent.id_horaire";
                     $query = $conn->query($sql);
                     while($row = $query->fetch_assoc()){
                       echo "
                         <tr>
-                          <td>".date('h:i A', strtotime($row['heure_entree']))."</td>
-                          <td>".date('h:i A', strtotime($row['heure_sortie']))."</td>
+                          <td>".$row['id_agent']."</td>
+                          <td>".$row['nom'].' '.$row['prenom']."</td>
+                          <td>".date('h:i A', strtotime($row['heure_entree'])).' - '.date('h:i A', strtotime($row['heure_sortie']))."</td>
                           <td>
-                            <button class='btn btn-primary btn-sm modifier btn-flat pull-right' data-id='".$row['id']."'><i class='fa fa-edit'></i></button>
-                            <button class='btn btn-danger btn-sm supprimer btn-flat pull-right' data-id='".$row['id']."'><i class='fa fa-trash'></i></button>
+                            <button class='btn btn-primary btn-sm modifier btn-flat pull-right' data-id='".$row['empid']."'><i class='fa fa-edit'></i></button>
                           </td>
                         </tr>
                       ";
@@ -83,23 +84,14 @@
   </div>
     
   <?php include 'includes/footer.php'; ?>
-  <?php include 'includes/modale_horaire.php'; ?>
+  <?php include 'includes/modale_horaire_agent.php'; ?>
 </div>
 <?php include 'includes/scripts.php'; ?>
 <script>
 $(function(){
-  //moment.locale('fr');
-
   $('.modifier').click(function(e){
     e.preventDefault();
     $('#modifier').modal('show');
-    var id = $(this).data('id');
-    getRow(id);
-  });
-
-  $('.supprimer').click(function(e){
-    e.preventDefault();
-    $('#supprimer').modal('show');
     var id = $(this).data('id');
     getRow(id);
   });
@@ -108,15 +100,14 @@ $(function(){
 function getRow(id){
   $.ajax({
     type: 'POST',
-    url: 'ligne_horaire.php',
+    url: 'line_horaire_agent.php',
     data: {id:id},
     dataType: 'json',
     success: function(response){
-      $('#timeid').val(response.id);
-      $('#modifier_HeureEntree').val(response.heure_entree);
-      $('#modifier_HeureSortie').val(response.heure_sortie);
-      $('#Supprimer_IdHeure').val(response.id);
-      $('#Suprimer_horaire').html(response.heure_entree+' - '+response.heure_sortie);
+      $('.nom_agent').html(response.nom+' '+response.prenom);
+      $('#horaire_val').val(response.id_horaire);
+      $('#horaire_val').html(response.heure_entree+' '+response.heure_sortie);
+      $('#empid').val(response.empid);
     }
   });
 }

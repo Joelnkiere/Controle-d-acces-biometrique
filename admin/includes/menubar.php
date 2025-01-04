@@ -16,15 +16,48 @@
         <li class="header">RAPPORT</li>
         <li class=""><a href="home.php"><i class="fa fa-dashboard"></i> <span>Tableau de Bord</span></a></li>
         <li class="header">GESTION AGENT</li>
-        <li><a href="agent.php"><i class="fa fa-users"></i><span>Agent</span></a></li>
+        <li class="treeview">
+        <a href="#">
+            <i class="fa fa-users"></i>
+            <span>Gestion Agent</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+
+          <ul class="treeview-menu">
+          <li><a href="agent.php"><i class="fa fa-users"></i><span>Liste Agent</span></a></li>
         <li><a href="direction.php"><i class="fa fa-building"></i><span>Direction</span></a></li> 
         <li><a href="service.php"><i class="fa fa-suitcase"></i><span>Service</span></a></li> 
+        <li><a href="poste.php"><i class="fa fa-suitcase"></i> Fonction</a></li>
+        </ul>
+        </li>
+       
+
+        <li class="header">GESTION DE PAIEMENT</li>
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-money"></i>
+            <span>Paiement</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+        <ul class="treeview-menu">
+        <li><a href="overtime.php"><i class="fa fa-circle-o"></i> Temps suplementaire</a></li>
+        <li><a href="cashadvance.php"><i class="fa fa-circle-o"></i>Avance sur salaire</a></li>
+        <li><a href="paiement.php"><i class="fa fa-files-o"></i> <span>Paiement</span></a></li>
+        <li><a href="deduction.php"><i class="fa fa-file-text"></i> Deduction sur salaire</a></li>
+          </ul>
+</li>
         <li class="header">GESTION PRESENCE</li>
         
         <li><a href="presence.php"><i class="fa fa-calendar"></i><span>Presence</span></a></li>
         
         
         <li><a href="horaire.php"><i class="fa fa-clock-o"></i> <span>Horaire</span></a></li>
+        
+        
       </ul>
     </section>
     <!-- /.sidebar -->

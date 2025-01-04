@@ -65,7 +65,7 @@
                 <tbody>
                   <?php
                   $numero=0;
-                    $sql = "SELECT *, agent.id AS empid FROM agent LEFT JOIN direction ON direction.id=agent.id_direction LEFT JOIN horaire ON horaire.id=agent.id_horaire LEFT JOIN service ON service.id_service=agent.id_service";
+                    $sql = "SELECT *, agent.id AS empid FROM agent LEFT JOIN direction ON direction.id=agent.id_direction LEFT JOIN horaire ON horaire.id=agent.id_horaire LEFT JOIN service ON service.id_service=agent.id_service LEFT JOIN poste ON poste.id_poste=agent.id_poste";
                     $query = $conn->query($sql);
                     while($row = $query->fetch_assoc()){
                       $numero+=1;
@@ -80,13 +80,13 @@
                           <td><?php echo $row['nom_service'];?></td>
                           
                           <td>
-                          <button class="btn btn-info btn-sm print-card btn-flat" data-id="<?php echo $row['empid']; ?>"><i class="fa fa-print"></i></button>
+                            <!--<button class="btn btn-info btn-sm print-card btn-flat" data-id="<?php// echo $row['empid']; ?>"><i class="fa fa-print"></i></button>-->
                             <button class="btn btn-primary btn-sm detail btn-flat"data-id="<?php echo $row['empid'];?>"><i class="fa fa-eye"></i></button>
                             <button class="btn  btn-sm modifier btn-flat" data-id="<?php echo $row['empid']; ?>"><i class="fa fa-edit"></i></button>
                             <button class="btn btn-danger btn-sm supprimer btn-flat" data-id="<?php echo $row['empid']; ?>"><i class="fa fa-trash"></i></button>
                             <button class="btn toggle-status btn-flat <?php echo ($row['status'] == 'actif') ? 'btn-success' : 'btn-danger'; ?>" data-id="<?php echo $row['empid']; ?>" data-status="<?php echo $row['status']; ?>">
-        <i class="fa <?php echo ($row['status'] == 'actif') ? 'fa-toggle-on' : 'fa-toggle-off'; ?>"></i>
-    </button>
+                            <i class="fa <?php echo ($row['status'] == 'actif') ? 'fa-toggle-on' : 'fa-toggle-off'; ?>"></i>
+                            </button>
                           </td>
                         </tr>
                       <?php
@@ -153,6 +153,7 @@ function getDetails(id){
       $('.sexe_agent').html(response.sexe);
       $('.direction_agent').html(response.libelle);
       $('.service_agent').html(response.nom_service);
+      $('.poste_agent').html(response.titre);
       $('.horaire_agent').html(response.heure_entree + ' - ' + response.heure_sortie);
       $('.photo_agent').attr('src', '../images/' + response.photo);
     }
@@ -174,11 +175,12 @@ function getRow(id){
       $('#modifier_prenom').val(response.prenom);
       $('#modifier_nom').val(response.nom);
       $('#modifier_adresse').val(response.adresse);
-      $('#modifier_date').val(response.date_naissance); // Assurez-vous que la date est au format correct
+      $('#modifier_date').val(response.date_naissance); 
       $('#modifier_telephone').val(response.telephone);
       $('#sexe_val').val(response.sexe).html(response.sexe);
       $('#direction_val').val(response.id_direction).html(response.libelle);
       $('#service_val').val(response.id_service).html(response.nom_service);
+      $('#poste_val').val(response.id_poste).html(response.titre);
       $('#horaire_val').val(response.id_horaire).html(response.heure_entree + ' - ' + response.heure_sortie);
     }
   });
@@ -216,20 +218,7 @@ $('.toggle-status').click(function(e){
     });
 });
 
-
-</script>
-
-
-
-
-
-<script src="../bower_components/moment/qrcode.js"></script> <!-- Le fichier que tu auras téléchargé -->
-
-
-
-<script>
-     
-    function generateQRCode(agentData) {
+function generateQRCode(agentData) {
         // Convertir les informations de l'agent en chaîne JSON
         const agentInfo = JSON.stringify({
           id: agentData.id_agent,
@@ -272,6 +261,7 @@ $('.toggle-status').click(function(e){
                 $('.sexe_agent').html(response.sexe);
                 $('.direction_agent').html(response.libelle);
                 $('.service_agent').html(response.nom_service);
+                $('.poste_agent').html(response.titre);
                 $('.horaire_agent').html(response.heure_entree + ' - ' + response.heure_sortie);
 
                 // Générer le QR code avec toutes les informations de l'agent
@@ -292,6 +282,12 @@ $('.toggle-status').click(function(e){
         window.print();
         document.body.innerHTML = originalContents;
     });
+
+
 </script>
+
+<script src="../bower_components/moment/qrcode.js"></script> <!-- Le fichier que tu auras téléchargé -->
+
+
 </body>
 </html>

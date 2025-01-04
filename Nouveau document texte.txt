@@ -1,0 +1,86 @@
+<?php
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+header('Access-Control-Allow-Methods: POST');
+header('Access-Control-Allow-Headers: Content-Type');
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if(trim(isset($_POST['agent']) && !empty($_POST['agent']))) {
+        $response = array('error'=>false);
+
+        include 'conn.php';
+        include 'timezone.php';
+
+        $agent = $_POST['agent'];
+        $status = $_POST['status'];
+
+        $req = "SELECT * FROM agent WHERE id_agent = '$agent' AND status='actif'";
+        $query = $conn->query($req);
+
+        if($query->num_rows > 0){
+            $ligne = $query->fetch_assoc();
+            $id = $ligne['id'];
+            $date_actuelle = date('Y-m-d');
+
+            if($status == 'entrée') {
+                $req = "SELECT * FROM presence WHERE id_agent = '$id' AND date = '$date_actuelle' AND heure_entree IS NOT NULL";
+                $query = $conn->query($req);
+                if($query->num_rows > 0){
+                    $response['error'] = true;
+                    $response['message_code'] = 'already_in';
+                    $response['message'] = 'Vous avez déjà enregistré votre arrivée aujourd\'hui.';
+                } else {
+                    $horaireAgent = $ligne['id_horaire'];
+                    $heureArrivee = date('H:i:s');
+                    $req = "SELECT * FROM horaire WHERE id = '$horaireAgent'";
+                    $squery = $conn->query($req);
+                    $ligneHoraire = $squery->fetch_assoc();
+                    $logstatus = ($heureArrivee > $ligneHoraire['heure_entree']) ? 0 : 1;
+
+                    $req = "INSERT INTO presence (id_agent, date, heure_entree, status) VALUES ('$id', '$date_actuelle', NOW(), '$logstatus')";
+                    if($conn->query($req)){
+                        $response['message_code'] = 'success';
+                        $response['message'] = 'Accès autorisé Pour: '.$ligne['prenom'].' '.$ligne['nom'];
+                    } else {
+                        $response['error'] = true;
+                        $response['message'] = $conn->error;
+                    }
+                }
+            } else { // Sortie
+                $req = "SELECT * FROM presence WHERE id_agent = '$id' AND date = '$date_actuelle'";
+                $query = $conn->query($req);
+                if($query->num_rows < 1){
+                    $response['error'] = true;
+                    $response['message_code'] = 'error';
+                    $response['message'] = 'Impossible d\'enregistrer le départ. Aucun enregistrement d\'arrivée trouvé.';
+                } else {
+                    $ligne = $query->fetch_assoc();
+                    if($ligne['heure_sortie'] != '00:00:00'){
+                        $response['error'] = true;
+                        $response['message_code'] = 'already_out';
+                        $response['message'] = 'Vous avez déjà enregistré votre départ aujourd\'hui.';
+                    } else {
+                        $req = "UPDATE presence SET heure_sortie = NOW() WHERE id = '".$ligne['UnAgent']."'";
+                        if($conn->query($req)){
+                            $response['message_code'] = 'time_out';
+                            $response['message'] = 'Sortie Autorisée Pour: '.$ligne['prenom'].' '.$ligne['nom'];
+                        } else {
+                            $response['error'] = true;
+                            $response['message'] = $conn->error;
+                        }
+                    }
+                }
+            }
+        } else {
+            $response['error'] = true;
+            $response['message_code'] = 'not_found';
+            $response['message'] = 'ID employé non trouvé.';
+        }
+        echo json_encode($response);
+    } else {
+        echo json_encode(array('error' => true, 'message' => 'Invalid input.'));
+    }
+} else {
+    echo json_encode(array('error' => true, 'message' => 'Invalid request method.'));
+}
+?>

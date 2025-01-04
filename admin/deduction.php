@@ -1,6 +1,6 @@
 <?php include 'includes/session.php'; ?>
 <?php include 'includes/header.php'; ?>
-<body class="hold-transition skin-blue sidebar-mini">
+<body class="hold-transition skin-black sidebar-mini">
 <div class="wrapper">
 
   <?php include 'includes/navbar.php'; ?>
@@ -11,12 +11,11 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Schedules
+        Deduction sur salaire
       </h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li>Employees</li>
-        <li class="active">Schedules</li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Accueil</a></li>
+        <li class="active">Deduction</li>
       </ol>
     </section>
     <!-- Main content -->
@@ -47,28 +46,27 @@
         <div class="col-xs-12">
           <div class="box">
             <div class="box-header with-border">
-              <a href="schedule_print.php" class="btn btn-success btn-sm btn-flat"><span class="glyphicon glyphicon-print"></span> Print</a>
+              <a href="#ajouter" data-toggle="modal" class="btn btn-primary btn-sm btn-flat"><i class="fa fa-plus"></i> Ajouter</a>
             </div>
             <div class="box-body">
               <table id="example1" class="table table-bordered">
                 <thead>
-                  <th>Employee ID</th>
-                  <th>Name</th>
-                  <th>Schedule</th>
-                  <th>Tools</th>
+                  <th>Description</th>
+                  <th>Montant</th>
+                  <th>Action</th>
                 </thead>
                 <tbody>
                   <?php
-                    $sql = "SELECT *, employees.id AS empid FROM employees LEFT JOIN schedules ON schedules.id=employees.schedule_id";
+                    $sql = "SELECT * FROM deduction_salaire";
                     $query = $conn->query($sql);
                     while($row = $query->fetch_assoc()){
                       echo "
                         <tr>
-                          <td>".$row['employee_id']."</td>
-                          <td>".$row['firstname'].' '.$row['lastname']."</td>
-                          <td>".date('h:i A', strtotime($row['time_in'])).' - '.date('h:i A', strtotime($row['time_out']))."</td>
+                          <td>".$row['motif']."</td>
+                          <td>".number_format($row['montant'], 2)."</td>
                           <td>
-                            <button class='btn btn-success btn-sm edit btn-flat' data-id='".$row['empid']."'><i class='fa fa-edit'></i> Edit</button>
+                            <button class='btn btn-primary btn-sm modifier btn-flat pull-right' data-id='".$row['id']."'><i class='fa fa-edit'></i></button>
+                            <button class='btn btn-danger btn-sm supprimer btn-flat pull-right' data-id='".$row['id']."'><i class='fa fa-trash'></i></button>
                           </td>
                         </tr>
                       ";
@@ -84,14 +82,21 @@
   </div>
     
   <?php include 'includes/footer.php'; ?>
-  <?php include 'includes/employee_schedule_modal.php'; ?>
+  <?php include 'includes/modale_deduction.php'; ?>
 </div>
 <?php include 'includes/scripts.php'; ?>
 <script>
 $(function(){
-  $('.edit').click(function(e){
+  $('.modifier').click(function(e){
     e.preventDefault();
-    $('#edit').modal('show');
+    $('#modifier').modal('show');
+    var id = $(this).data('id');
+    getRow(id);
+  });
+
+  $('.supprimer').click(function(e){
+    e.preventDefault();
+    $('#supprimer').modal('show');
     var id = $(this).data('id');
     getRow(id);
   });
@@ -100,14 +105,14 @@ $(function(){
 function getRow(id){
   $.ajax({
     type: 'POST',
-    url: 'schedule_employee_row.php',
+    url: 'ligne_deduction.php',
     data: {id:id},
     dataType: 'json',
     success: function(response){
-      $('.employee_name').html(response.firstname+' '+response.lastname);
-      $('#schedule_val').val(response.schedule_id);
-      $('#schedule_val').html(response.time_in+' '+response.time_out);
-      $('#empid').val(response.empid);
+      $('.decid').val(response.id);
+      $('#modifier_motif').val(response.motif);
+      $('#modifier_montant').val(response.montant);
+      $('#supprimer_deduction').html(response.motif);
     }
   });
 }

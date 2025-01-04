@@ -25,6 +25,9 @@
 
 		$service1=$_POST['service'];
 		$service=str_replace("'","\'",$service1);
+		$poste1=$_POST ['poste'];
+		$poste=str_replace("'","\'",$poste1);
+
 
 		$horaire1 = $_POST['horaire'];
 		$horaire=str_replace("'","\'",$horaire1);
@@ -60,7 +63,7 @@
 		}
 		$id_agent = substr(str_shuffle($letters), 0, 3).substr(str_shuffle($numbers), 0, 9);
 		//
-		$sql = "INSERT INTO agent (id_agent, prenom, nom, adresse, date_naissance, telephone, sexe, id_direction, id_horaire, photo, created_on, id_service) VALUES ('$id_agent', '$prenom', '$nom', '$adresse', '$date_naissance', '$telephone', '$sexe', '$direction', '$horaire', '$photo', NOW(), '$service')";
+		$sql = "INSERT INTO agent (id_agent, prenom, nom, adresse, date_naissance, telephone, sexe, id_direction, id_horaire, photo, created_on, id_service, id_poste) VALUES ('$id_agent', '$prenom', '$nom', '$adresse', '$date_naissance', '$telephone', '$sexe', '$direction', '$horaire', '$photo', NOW(), '$service','$poste')";
 		if($conn->query($sql)){
 			$_SESSION['success'] = 'Agent Enregistrer avec succes!';
 		}

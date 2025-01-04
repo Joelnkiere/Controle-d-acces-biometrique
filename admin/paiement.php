@@ -1,11 +1,11 @@
 <?php include 'includes/session.php'; ?>
 <?php
   include '../timezone.php';
-  $range_to = date('m/d/Y');
-  $range_from = date('m/d/Y', strtotime('-30 day', strtotime($range_to)));
+  $debut = date('m/d/Y');
+  $fin = date('m/d/Y', strtotime('-30 day', strtotime($debut)));
 ?>
 <?php include 'includes/header.php'; ?>
-<body class="hold-transition skin-blue sidebar-mini">
+<body class="hold-transition skin-black sidebar-mini">
 <div class="wrapper">
 
   <?php include 'includes/navbar.php'; ?>
@@ -16,11 +16,11 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Payroll
+        Gestion de paie
       </h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Payroll</li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Accueil</a></li>
+        <li class="active">Gestion de paie</li>
       </ol>
     </section>
     <!-- Main content -->
@@ -30,7 +30,7 @@
           echo "
             <div class='alert alert-danger alert-dismissible'>
               <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
-              <h4><i class='icon fa fa-warning'></i> Error!</h4>
+              <h4><i class='icon fa fa-warning'></i> Erreur!</h4>
               ".$_SESSION['error']."
             </div>
           ";
@@ -40,7 +40,7 @@
           echo "
             <div class='alert alert-success alert-dismissible'>
               <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
-              <h4><i class='icon fa fa-check'></i> Success!</h4>
+              <h4><i class='icon fa fa-check'></i> Succes!</h4>
               ".$_SESSION['success']."
             </div>
           ";
@@ -57,29 +57,29 @@
                     <div class="input-group-addon">
                       <i class="fa fa-calendar"></i>
                     </div>
-                    <input type="text" class="form-control pull-right col-sm-8" id="reservation" name="date_range" value="<?php echo (isset($_GET['range'])) ? $_GET['range'] : $range_from.' - '.$range_to; ?>">
+                    <input type="text" class="form-control pull-right col-sm-8" id="reservation" name="date_range" value="<?php echo (isset($_GET['range'])) ? $_GET['range'] : $fin.' - '.$debut; ?>">
                   </div>
-                  <button type="button" class="btn btn-success btn-sm btn-flat" id="payroll"><span class="glyphicon glyphicon-print"></span> Payroll</button>
-                  <button type="button" class="btn btn-primary btn-sm btn-flat" id="payslip"><span class="glyphicon glyphicon-print"></span> Payslip</button>
+                  <button type="button" class="btn btn-success btn-sm btn-flat" id="paiement"><span class="glyphicon glyphicon-print"></span> Paiement</button>
+                  <button type="button" class="btn btn-primary btn-sm btn-flat" id="payslip"><span class="glyphicon glyphicon-print"></span> Bulletin de paie</button>
                 </form>
               </div>
             </div>
             <div class="box-body">
               <table id="example1" class="table table-bordered">
                 <thead>
-                  <th>Employee Name</th>
-                  <th>Employee ID</th>
-                  <th>Gross</th>
-                  <th>Deductions</th>
-                  <th>Cash Advance</th>
-                  <th>Net Pay</th>
+                  <th>Nom Agent</th>
+                  <th>ID Agent</th>
+                  <th>Salaire de base</th>
+                  <th>Deduction sur salaire</th>
+                  <th>Avance sur salaire</th>
+                  <th>Net à Payer</th>
                 </thead>
                 <tbody>
                   <?php
-                    $sql = "SELECT *, SUM(amount) as total_amount FROM deductions";
+                    $sql = "SELECT *, SUM(montant) as montant_total FROM deduction_salaire";
                     $query = $conn->query($sql);
                     $drow = $query->fetch_assoc();
-                    $deduction = $drow['total_amount'];
+                    $deduction = $drow['montant_total'];
   
                     
                     $to = date('Y-m-d');
@@ -92,30 +92,31 @@
                       $to = date('Y-m-d', strtotime($ex[1]));
                     }
 
-                    $sql = "SELECT *, SUM(num_hr) AS total_hr, attendance.employee_id AS empid FROM attendance LEFT JOIN employees ON employees.id=attendance.employee_id LEFT JOIN position ON position.id=employees.position_id WHERE date BETWEEN '$from' AND '$to' GROUP BY attendance.employee_id ORDER BY employees.lastname ASC, employees.firstname ASC";
+                    $sql = "SELECT *, SUM(nombre_heure) AS total_hr, presence.id_agent AS empid FROM presence LEFT JOIN agent ON agent.id=presence.id_agent LEFT JOIN poste ON poste.id_poste=agent.id_poste WHERE date BETWEEN '$from' AND '$to' GROUP BY presence.id_agent ORDER BY agent.nom ASC, agent.prenom ASC";
 
                     $query = $conn->query($sql);
                     $total = 0;
                     while($row = $query->fetch_assoc()){
                       $empid = $row['empid'];
                       
-                      $casql = "SELECT *, SUM(amount) AS cashamount FROM cashadvance WHERE employee_id='$empid' AND date_advance BETWEEN '$from' AND '$to'";
+                      $avance = "SELECT *, SUM(montant) AS montant FROM avance_salaire WHERE id_agent='$empid' AND date_avance BETWEEN '$from' AND '$to'";
                       
-                      $caquery = $conn->query($casql);
+                      $caquery = $conn->query($avance);
                       $carow = $caquery->fetch_assoc();
-                      $cashadvance = $carow['cashamount'];
+                      $avance_salaire = $carow['montant'];
 
-                      $gross = $row['rate'] * $row['total_hr'];
-                      $total_deduction = $deduction + $cashadvance;
+                      $gross = $row['salaire_parHeure'] * $row['total_hr'];
+                      $total_deduction = $deduction + $avance_salaire;
                       $net = $gross - $total_deduction;
+                      
 
                       echo "
                         <tr>
-                          <td>".$row['lastname'].", ".$row['firstname']."</td>
-                          <td>".$row['employee_id']."</td>
-                          <td>".number_format($gross, 2)."</td>
+                          <td>".$row['nom'].", ".$row['prenom']."</td>
+                          <td>".$row['id_agent']."</td>
+                          <td>".$row['salaire_parHeure']."</td>
                           <td>".number_format($deduction, 2)."</td>
-                          <td>".number_format($cashadvance, 2)."</td>
+                          <td>".number_format($avance_salaire, 2)."</td>
                           <td>".number_format($net, 2)."</td>
                         </tr>
                       ";
@@ -152,18 +153,18 @@ $(function(){
 
   $("#reservation").on('change', function(){
     var range = encodeURI($(this).val());
-    window.location = 'payroll.php?range='+range;
+    window.location = 'paiement.php?range='+range;
   });
 
-  $('#payroll').click(function(e){
+  $('#paiement').click(function(e){
     e.preventDefault();
-    $('#payForm').attr('action', 'payroll_generate.php');
+    $('#payForm').attr('action', 'generer_paiement.php');
     $('#payForm').submit();
   });
 
   $('#payslip').click(function(e){
     e.preventDefault();
-    $('#payForm').attr('action', 'payslip_generate.php');
+    $('#payForm').attr('action', 'generer_bulletin.php');
     $('#payForm').submit();
   });
 
@@ -172,15 +173,15 @@ $(function(){
 function getRow(id){
   $.ajax({
     type: 'POST',
-    url: 'position_row.php',
+    url: 'ligne_poste.php',
     data: {id:id},
     dataType: 'json',
     success: function(response){
-      $('#posid').val(response.id);
-      $('#edit_title').val(response.description);
-      $('#edit_rate').val(response.rate);
-      $('#del_posid').val(response.id);
-      $('#del_position').html(response.description);
+      $('#id_poste').val(response.id);
+      $('#modifier_titre').val(response.description);
+      $('#modifier_salaire').val(response.salaire_parHeure);
+      $('#supprimer_id').val(response.id);
+      $('#supprimer_poste').html(response.description);
     }
   });
 }

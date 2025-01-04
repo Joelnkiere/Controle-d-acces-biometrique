@@ -3,9 +3,9 @@
 
 	if(isset($_POST['delete'])){
 		$id = $_POST['id'];
-		$sql = "DELETE FROM schedules WHERE id = '$id'";
+		$sql = "DELETE FROM cashadvance WHERE id = '$id'";
 		if($conn->query($sql)){
-			$_SESSION['success'] = 'Schedule deleted successfully';
+			$_SESSION['success'] = 'Cash advance deleted successfully';
 		}
 		else{
 			$_SESSION['error'] = $conn->error;
@@ -15,6 +15,6 @@
 		$_SESSION['error'] = 'Select item to delete first';
 	}
 
-	header('location: schedule.php');
+	header('location: cashadvance.php');
 	
 ?>

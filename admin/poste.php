@@ -11,7 +11,7 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Les Services
+        Les Postes
       </h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i>Accueil</a></li>
@@ -52,25 +52,28 @@
               <table id="example1" class="table table-bordered table-striped">
                 <thead>
                   <th><b>#</b></th>
-                  <th>Service</th>
+                  <th>Poste</th>
                   <th>Direction</th>
+                  <th>Salaire de base</th>
                   <th>Action</th>
                 </thead>
                 <tbody>
                   <?php
                   $numero=0;
-                    $sql = "SELECT *,direction.libelle FROM service INNER JOIN direction on service.id_direction=direction.id";
+                    $sql = "SELECT *,direction.libelle FROM poste INNER JOIN direction on poste.id_direction=direction.id";
                     $query = $conn->query($sql);
                     while($row = $query->fetch_assoc()){
                       $numero+=1;
                       echo "
                         <tr>
                         <td>".$numero."</td>
-                          <td>".$row['nom_service']."</td> 
+                          <td>".$row['titre']."</td> 
                           <td>".$row['libelle']."</td>
+                          <td>".$row['salaire_parHeure']."</td>
+
                          <td>
-    <button class='btn btn-primary btn-sm modifier btn-flat pull-right' data-id_service='".$row['id_service']."'><i class='fa fa-edit'></i></button>
-    <button class='btn btn-danger btn-sm supprimer btn-flat pull-right' data-id_service='".$row['id_service']."'><i class='fa fa-trash'></i></button>
+    <button class='btn btn-primary btn-sm modifier btn-flat pull-right' data-id_poste='".$row['id_poste']."'><i class='fa fa-edit'></i></button>
+    <button class='btn btn-danger btn-sm supprimer btn-flat pull-right' data-id_poste='".$row['id_poste']."'><i class='fa fa-trash'></i></button>
                           </td>
 
                         </tr>
@@ -87,7 +90,7 @@
   </div>
     
   <?php include 'includes/footer.php'; ?>
-  <?php include 'includes/modale_service.php'; ?>
+  <?php include 'includes/modale_poste.php'; ?>
 </div>
 <?php include 'includes/scripts.php'; ?>
 <script>
@@ -95,32 +98,35 @@ $(function(){
   $('.modifier').click(function(e){
     e.preventDefault();
     $('#modifier').modal('show');
-    var id_service = $(this).data('id_service');
-    getRow(id_service);
+    var id_poste = $(this).data('id_poste');
+    getRow(id_poste);
   });
 
   $('.supprimer').click(function(e){
     e.preventDefault();
     $('#supprimer').modal('show');
-    var id_service = $(this).data('id_service');
-    getRow(id_service);
+    var id_poste = $(this).data('id_poste');
+    getRow(id_poste);
   });
 });
-function getRow(id_service){
-  console.log("ID Service:", id_service); // Vérifiez que l'ID est correct
+function getRow(id_poste){
+  console.log("ID Poste:", id_poste); // Vérifiez que l'ID est correct
   $.ajax({
     type: 'POST',
-    url: 'ligne_service.php',
-    data: {id_service: id_service}, // Assurez-vous que c'est 'id_service'
+    url: 'ligne_poste.php',
+    data: {id_poste: id_poste}, // Assurez-vous que c'est 'id_poste'
     dataType: 'json',
     success: function(response){
       console.log("Response:", response); // Vérifiez la réponse
       if(response) { // Vérifiez si la réponse est valide
-        $('#serviceid').val(response.id_service);
-        $('#modifier_service').val(response.nom_service);
-        $('#supprimer_id').val(response.id_service);
-        $('#supprimer_service').html(response.nom_service);
+        $('#serviceid').val(response.id_poste);
+        $('#modifier_poste').val(response.titre);
+        $('#supprimer_id').val(response.id_poste);
+        $('#supprimer_poste').html(response.titre);
         $('#direction_val').val(response.id_direction); // Assurez-vous que cela fonctionne
+        $('#modifier_salaire').val(response.salaire_parHeure);
+        $('#supprimer_salaire').html(response.salaire_parHeure);
+
       } else {
         console.error("No response received or invalid response.");
       }
