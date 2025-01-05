@@ -45,7 +45,7 @@
           </a>
         <ul class="treeview-menu">
         <li><a href="overtime.php"><i class="fa fa-circle-o"></i> Temps suplementaire</a></li>
-        <li><a href="cashadvance.php"><i class="fa fa-circle-o"></i>Avance sur salaire</a></li>
+        <li><a href="avance_salaire.php"><i class="fa fa-circle-o"></i>Avance sur salaire</a></li>
         <li><a href="paiement.php"><i class="fa fa-files-o"></i> <span>Paiement</span></a></li>
         <li><a href="deduction.php"><i class="fa fa-file-text"></i> Deduction sur salaire</a></li>
           </ul>

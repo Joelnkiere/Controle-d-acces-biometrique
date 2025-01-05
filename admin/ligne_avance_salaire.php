@@ -3,7 +3,7 @@
 
 	if(isset($_POST['id'])){
 		$id = $_POST['id'];
-		$sql = "SELECT *, cashadvance.id AS caid FROM cashadvance LEFT JOIN employees on employees.id=cashadvance.employee_id WHERE cashadvance.id='$id'";
+		$sql = "SELECT *, avance_salaire.id AS caid FROM avance_salaire LEFT JOIN agent on agent.id=avance_salaire.id_agent WHERE avance_salaire.id='$id'";
 		$query = $conn->query($sql);
 		$row = $query->fetch_assoc();
 

@@ -1,6 +1,6 @@
 <?php include 'includes/session.php'; ?>
 <?php include 'includes/header.php'; ?>
-<body class="hold-transition skin-blue sidebar-mini">
+<body class="hold-transition skin-black sidebar-mini">
 <div class="wrapper">
 
   <?php include 'includes/navbar.php'; ?>
@@ -11,12 +11,12 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Cash Advance
+        Avance sur salaire
       </h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li>Employees</li>
-        <li class="active">Cash Advance</li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Accueil</a></li>
+        <li>Agent</li>
+        <li class="active">Avance sur salaire</li>
       </ol>
     </section>
     <!-- Main content -->
@@ -26,7 +26,7 @@
           echo "
             <div class='alert alert-danger alert-dismissible'>
               <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
-              <h4><i class='icon fa fa-warning'></i> Error!</h4>
+              <h4><i class='icon fa fa-warning'></i> échec de l'operation!</h4>
               ".$_SESSION['error']."
             </div>
           ";
@@ -36,7 +36,7 @@
           echo "
             <div class='alert alert-success alert-dismissible'>
               <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
-              <h4><i class='icon fa fa-check'></i> Success!</h4>
+              <h4><i class='icon fa fa-check'></i> operation reussie!</h4>
               ".$_SESSION['success']."
             </div>
           ";
@@ -47,33 +47,33 @@
         <div class="col-xs-12">
           <div class="box">
             <div class="box-header with-border">
-              <a href="#addnew" data-toggle="modal" class="btn btn-primary btn-sm btn-flat"><i class="fa fa-plus"></i> New</a>
+              <a href="#ajouter" data-toggle="modal" class="btn btn-primary btn-sm btn-flat"><i class="fa fa-plus"></i> Ajouter</a>
             </div>
             <div class="box-body">
               <table id="example1" class="table table-bordered">
                 <thead>
                   <th class="hidden"></th>
                   <th>Date</th>
-                  <th>Employee ID</th>
-                  <th>Name</th>
-                  <th>Amount</th>
-                  <th>Tools</th>
+                  <th>ID Agent</th>
+                  <th>Nom</th>
+                  <th>Montant</th>
+                  <th>Action</th>
                 </thead>
                 <tbody>
                   <?php
-                    $sql = "SELECT *, cashadvance.id AS caid, employees.employee_id AS empid FROM cashadvance LEFT JOIN employees ON employees.id=cashadvance.employee_id ORDER BY date_advance DESC";
+                    $sql = "SELECT *, avance_salaire.id AS caid, agent.id_agent AS empid FROM avance_salaire LEFT JOIN agent ON agent.id=avance_salaire.id_agent ORDER BY date_avance DESC";
                     $query = $conn->query($sql);
                     while($row = $query->fetch_assoc()){
                       echo "
                         <tr>
                           <td class='hidden'></td>
-                          <td>".date('M d, Y', strtotime($row['date_advance']))."</td>
+                          <td>".date('d M, Y', strtotime($row['date_avance']))."</td>
                           <td>".$row['empid']."</td>
-                          <td>".$row['firstname'].' '.$row['lastname']."</td>
-                          <td>".number_format($row['amount'], 2)."</td>
+                          <td>".$row['nom'].' '.$row['prenom']."</td>
+                          <td>".number_format($row['montant'], 2)."</td>
                           <td>
-                            <button class='btn btn-success btn-sm edit btn-flat' data-id='".$row['caid']."'><i class='fa fa-edit'></i> Edit</button>
-                            <button class='btn btn-danger btn-sm delete btn-flat' data-id='".$row['caid']."'><i class='fa fa-trash'></i> Delete</button>
+                            <button class='btn btn-primary btn-sm modifier btn-flat pull-right' data-id='".$row['caid']."'><i class='fa fa-edit'></i></button>
+                            <button class='btn btn-danger btn-sm supprimer btn-flat pull-right' data-id='".$row['caid']."'><i class='fa fa-trash'></i></button>
                           </td>
                         </tr>
                       ";
@@ -89,21 +89,21 @@
   </div>
     
   <?php include 'includes/footer.php'; ?>
-  <?php include 'includes/cashadvance_modal.php'; ?>
+  <?php include 'includes/modale_avance_salaire.php'; ?>
 </div>
 <?php include 'includes/scripts.php'; ?>
 <script>
 $(function(){
-  $('.edit').click(function(e){
+  $('.modifier').click(function(e){
     e.preventDefault();
-    $('#edit').modal('show');
+    $('#modifier').modal('show');
     var id = $(this).data('id');
     getRow(id);
   });
 
-  $('.delete').click(function(e){
+  $('.supprimer').click(function(e){
     e.preventDefault();
-    $('#delete').modal('show');
+    $('#supprimer').modal('show');
     var id = $(this).data('id');
     getRow(id);
   });
@@ -112,15 +112,15 @@ $(function(){
 function getRow(id){
   $.ajax({
     type: 'POST',
-    url: 'cashadvance_row.php',
+    url: 'ligne_avance_salaire.php',
     data: {id:id},
     dataType: 'json',
     success: function(response){
       console.log(response);
-      $('.date').html(response.date_advance);
-      $('.employee_name').html(response.firstname+' '+response.lastname);
+      $('.date').html(response.date_avance);
+      $('.nom_agent').html(response.nom+' '+response.prenom);
       $('.caid').val(response.caid);
-      $('#edit_amount').val(response.amount);
+      $('#modifier_montant').val(response.montant);
     }
   });
 }
