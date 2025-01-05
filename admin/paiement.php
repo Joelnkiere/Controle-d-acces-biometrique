@@ -60,7 +60,7 @@
                     <input type="text" class="form-control pull-right col-sm-8" id="reservation" name="date_range" value="<?php echo (isset($_GET['range'])) ? $_GET['range'] : $fin.' - '.$debut; ?>">
                   </div>
                   <button type="button" class="btn btn-success btn-sm btn-flat" id="paiement"><span class="glyphicon glyphicon-print"></span> Paiement</button>
-                  <button type="button" class="btn btn-primary btn-sm btn-flat" id="payslip"><span class="glyphicon glyphicon-print"></span> Bulletin de paie</button>
+                  <button type="button" class="btn btn-primary btn-sm btn-flat" id="bulletin"><span class="glyphicon glyphicon-print"></span> Bulletin de paie</button>
                 </form>
               </div>
             </div>
@@ -162,7 +162,7 @@ $(function(){
     $('#payForm').submit();
   });
 
-  $('#payslip').click(function(e){
+  $('#bulletin').click(function(e){
     e.preventDefault();
     $('#payForm').attr('action', 'generer_bulletin.php');
     $('#payForm').submit();

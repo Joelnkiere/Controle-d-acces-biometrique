@@ -4,28 +4,28 @@
 	function generateRow($from, $to, $conn, $deduction){
 		$contents = '';
 	 	
-		$sql = "SELECT *, sum(num_hr) AS total_hr, attendance.employee_id AS empid FROM attendance LEFT JOIN employees ON employees.id=attendance.employee_id LEFT JOIN position ON position.id=employees.position_id WHERE date BETWEEN '$from' AND '$to' GROUP BY attendance.employee_id ORDER BY employees.lastname ASC, employees.firstname ASC";
+		$sql = "SELECT *, sum(nombre_heure) AS total_hr, presence.id_agent AS empid FROM presence LEFT JOIN agent ON agent.id=presence.id_agent LEFT JOIN poste ON poste.id=agent.id_poste WHERE date BETWEEN '$from' AND '$to' GROUP BY presence.id_agent ORDER BY agent.nom ASC, agent.prenom ASC";
 
 		$query = $conn->query($sql);
 		$total = 0;
 		while($row = $query->fetch_assoc()){
 			$empid = $row['empid'];
                       
-	      	$casql = "SELECT *, SUM(amount) AS cashamount FROM cashadvance WHERE employee_id='$empid' AND date_advance BETWEEN '$from' AND '$to'";
+	      	$casql = "SELECT *, SUM(montant) AS montant_total FROM avance_salaire WHERE id_agent='$empid' AND date_avance BETWEEN '$from' AND '$to'";
 	      
 	      	$caquery = $conn->query($casql);
 	      	$carow = $caquery->fetch_assoc();
-	      	$cashadvance = $carow['cashamount'];
+	      	$avance_salaire = $carow['montant_total'];
 
-			$gross = $row['rate'] * $row['total_hr'];
-			$total_deduction = $deduction + $cashadvance;
-      		$net = $gross - $total_deduction;
+			$salaire_brute = $row['salaire_parHeure'] * $row['total_hr'];
+			$total_deduction = $deduction + $avance_salaire;
+      		$net = $salaire_brute - $total_deduction;
 
 			$total += $net;
 			$contents .= '
 			<tr>
-				<td>'.$row['lastname'].', '.$row['firstname'].'</td>
-				<td>'.$row['employee_id'].'</td>
+				<td>'.$row['nom'].', '.$row['prenom'].'</td>
+				<td>'.$row['id_agent'].'</td>
 				<td align="right">'.number_format($net, 2).'</td>
 			</tr>
 			';
@@ -45,10 +45,10 @@
 	$from = date('Y-m-d', strtotime($ex[0]));
 	$to = date('Y-m-d', strtotime($ex[1]));
 
-	$sql = "SELECT *, SUM(amount) as total_amount FROM deductions";
+	$sql = "SELECT *, SUM(montant) as montant_total FROM deduction_salaire";
     $query = $conn->query($sql);
    	$drow = $query->fetch_assoc();
-    $deduction = $drow['total_amount'];
+    $deduction = $drow['montant_total'];
 
 	$from_title = date('M d, Y', strtotime($ex[0]));
 	$to_title = date('M d, Y', strtotime($ex[1]));
@@ -70,18 +70,18 @@
     $pdf->AddPage();  
     $content = '';  
     $content .= '
-      	<h2 align="center">TechSoft IT Solutions</h2>
+      	<h2 align="center">Banque Centrale du Congo</h2>
       	<h4 align="center">'.$from_title." - ".$to_title.'</h4>
       	<table border="1" cellspacing="0" cellpadding="3">  
            <tr>  
-           		<th width="40%" align="center"><b>Employee Name</b></th>
-                <th width="30%" align="center"><b>Employee ID</b></th>
-				<th width="30%" align="center"><b>Net Pay</b></th> 
+           		<th width="40%" align="center"><b>Nom Agent</b></th>
+                <th width="30%" align="center"><b>ID Agent</b></th>
+				<th width="30%" align="center"><b>Net à Payer</b></th> 
            </tr>  
       ';  
     $content .= generateRow($from, $to, $conn, $deduction);  
     $content .= '</table>';  
     $pdf->writeHTML($content);  
-    $pdf->Output('payroll.pdf', 'I');
+    $pdf->Output('paiement.pdf', 'I');
 
 ?>

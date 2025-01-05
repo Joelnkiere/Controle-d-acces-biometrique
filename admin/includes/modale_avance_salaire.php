@@ -9,13 +9,26 @@
           	</div>
           	<div class="modal-body">
             	<form class="form-horizontal" method="POST" action="ajout_avance_salaire.php">
-          		  <div class="form-group">
-                  	<label for="agent" class="col-sm-3 control-label">ID Agent</label>
+          		  
+				<div class="form-group">
+                    <label for="agent" class="col-sm-3 control-label">Agent</label>
 
-                  	<div class="col-sm-9">
-                    	<input type="text" class="form-control" id="agent" name="agent" required>
-                  	</div>
+                    <div class="col-sm-9">
+                      <select class="form-control" name="agent" id="agent" required>
+                        <option value="" selected>- Selectionner -</option>
+                        <?php
+                          $sql = "SELECT * FROM agent";
+                          $query = $conn->query($sql);
+                          while($row = $query->fetch_assoc()){
+                            echo "
+                              <option value='".$row['id_agent']."'>".$row['nom']." ".$row['prenom']."</option>
+                            ";
+                          }
+                        ?>
+                      </select>
+                    </div>
                 </div>
+				
                 <div class="form-group">
                     <label for="montant" class="col-sm-3 control-label">Montant</label>
 

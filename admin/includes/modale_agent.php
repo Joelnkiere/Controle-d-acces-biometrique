@@ -98,7 +98,7 @@
                     <label for="poste" class="col-sm-3 control-label">Poste</label>
 
                     <div class="col-sm-9">
-                      <select class="form-control select2" name="poste" id="poste" required>
+                      <select class="form-control" name="poste" id="poste" required>
                         <option value="" selected>- Selectionner -</option>
                         <?php
                           $sql = "SELECT * FROM poste";

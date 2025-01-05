@@ -15,11 +15,11 @@
       <ul class="sidebar-menu" data-widget="tree">
         <li class="header">RAPPORT</li>
         <li class=""><a href="home.php"><i class="fa fa-dashboard"></i> <span>Tableau de Bord</span></a></li>
-        <li class="header">GESTION AGENT</li>
+        <li class="header">GESTION AGENT ET ORGANE</li>
         <li class="treeview">
         <a href="#">
             <i class="fa fa-users"></i>
-            <span>Gestion Agent</span>
+            <span>Agents et Organes</span>
             <span class="pull-right-container">
               <i class="fa fa-angle-left pull-right"></i>
             </span>
@@ -44,20 +44,36 @@
             </span>
           </a>
         <ul class="treeview-menu">
-        <li><a href="overtime.php"><i class="fa fa-circle-o"></i> Temps suplementaire</a></li>
         <li><a href="avance_salaire.php"><i class="fa fa-circle-o"></i>Avance sur salaire</a></li>
         <li><a href="paiement.php"><i class="fa fa-files-o"></i> <span>Paiement</span></a></li>
         <li><a href="deduction.php"><i class="fa fa-file-text"></i> Deduction sur salaire</a></li>
           </ul>
 </li>
-        <li class="header">GESTION PRESENCE</li>
         
+<li class="header">GESTION PRESENCE ET HORAIRE</li>
+        <li class="treeview">
+          <a href="#">
+            <i class="fa fa-clock-o"></i>
+            <span>Horaire</span>
+            <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+          </a>
+        <ul class="treeview-menu">
         <li><a href="presence.php"><i class="fa fa-calendar"></i><span>Presence</span></a></li>
+        <li><a href="horaire.php"><i class="fa fa-clock-o"></i> <span>Horaire de travail</span></a></li>
+        <li><a href="horaire_agent.php"><i class="fa fa-clock-o"></i> <span>Affectation Horaire</span></a></li>
+         </ul>
+        </li>
+        
+        <li class="header">SYSTEME</li>
+        <li><a href="#"><i class="fa fa-user"></i> <span>Mon Profil</span></a></li>
+        <li><a href="#"><i class="fa fa-users"></i> <span>Utilisateur</span></a></li>
         
         
-        <li><a href="horaire.php"><i class="fa fa-clock-o"></i> <span>Horaire</span></a></li>
         
         
+       
       </ul>
     </section>
     <!-- /.sidebar -->
