@@ -2,57 +2,30 @@
 <?php 
   include '../timezone.php'; 
   $today = date('Y-m-d');
-  $year = date('Y');
-  if(isset($_GET['year'])){
-    $year = $_GET['year'];
+  $currentMonth = date('m');
+  $currentYear = date('Y');
+  if (isset($_GET['month'])) {
+    $currentMonth = $_GET['month'];
   }
 ?>
 <?php include 'includes/header.php'; ?>
 <body class="hold-transition skin-black sidebar-mini">
 <div class="wrapper">
 
-  	<?php include 'includes/navbar.php'; ?>
-  	<?php include 'includes/menubar.php'; ?>
+    <?php include 'includes/navbar.php'; ?>
+    <?php include 'includes/menubar.php'; ?>
 
-  <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <h1>
-        Tableau de Bord
-      </h1>
-      <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Accueil</a></li>
-        <li class="active">Tableau de bord</li>
-      </ol>
-    </section>
+    <div class="content-wrapper">
+        <section class="content-header">
+            <h1>Tableau de Bord</h1>
+            <ol class="breadcrumb">
+                <li><a href="#"><i class="fa fa-dashboard"></i> Accueil</a></li>
+                <li class="active">Tableau de bord</li>
+            </ol>
+        </section>
 
-    <!-- Main content -->
-    <section class="content">
-      <?php
-        if(isset($_SESSION['error'])){
-          echo "
-            <div class='alert alert-danger alert-dismissible'>
-              <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
-              <h4><i class='icon fa fa-warning'></i> Echéc de l'operation!</h4>
-              ".$_SESSION['error']."
-            </div>
-          ";
-          unset($_SESSION['error']);
-        }
-        if(isset($_SESSION['success'])){
-          echo "
-            <div class='alert alert-success alert-dismissible'>
-              <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
-              <h4><i class='icon fa fa-check'></i> Operation reussie!</h4>
-              ".$_SESSION['success']."
-            </div>
-          ";
-          unset($_SESSION['success']);
-        }
-      ?>
-      <!-- Small boxes (Stat box) -->
-      <div class="row">
+        <section class="content">
+        <div class="row">
         <div class="col-lg-3 col-xs-6">
           <!-- small box -->
           <div class="small-box bg-aqua">
@@ -141,147 +114,270 @@
         </div>
         <!-- ./col -->
       </div>
-      <!-- /.row -->
-      <div class="row">
-        <div class="col-xs-12" style="height=50%;">
-          <div class="box">
-            <div class="box-header with-border">
-              <h3 class="box-title">Rapport Annuel de presence</h3>
-              <div class="box-tools pull-right">
-                <form class="form-inline">
-                  <div class="form-group">
-                    <label>Selectionner l'année: </label>
-                    <select class="form-control input-sm" id="select_year">
-                      <?php
-                        for($i=2015; $i<=2065; $i++){
-                          $selected = ($i==$year)?'selected':'';
-                          echo "
-                            <option value='".$i."' ".$selected.">".$i."</option>
-                          ";
-                        }
-                      ?>
-                    </select>
-                  </div>
-                </form>
-              </div>
-            </div>
-            <div class="box-body">
-              <div class="chart">
-                <br>
-                <div id="legend" class="text-center"></div>
-                <canvas id="pieChart" style="height:350px"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+            <div class="row">
+                <div class="col-xs-12">
+                    <div class="box">
+                        <div class="box-header with-border">
+                            <h3 class="box-title">Rapport Mensuel de Présence</h3>
+                            <div class="box-tools pull-right">
+                                <form class="form-inline">
+                                    <div class="form-group">
+                                        <label>Sélectionner le mois : </label>
+                                        <select class="form-control input-sm" id="select_month">
+                                            <?php
+                                            for ($m = 1; $m <= 12; $m++) {
+                                                $selected = ($m == $currentMonth) ? 'selected' : '';
+                                                echo "<option value='" . $m . "' " . $selected . ">" . date('F', mktime(0, 0, 0, $m, 1)) . "</option>";
+                                            }
+                                            ?>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="box-body">
+                            <div class="row">
+                                <!-- Premier graphique : Barres -->
+                                <div class="col-md-8">
+                                    <h4>Statistiques par Jour</h4>
+                                    <div class="chart" style="max-width: 100%; height: 300px;">
+                                        <canvas id="barChart"></canvas>
+                                    </div>
+                                </div>
 
-      </section>
-      <!-- right col -->
+                                <!-- Deuxième graphique : Donut -->
+                                <div class="col-md-4">
+                                    <h4>Statistiques par Semaine</h4>
+                                    <div class="chart" style="max-width: 100%; height: 300px;">
+                                        <canvas id="donutChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
     </div>
-  	<?php include 'includes/footer.php'; ?>
 
+    <?php include 'includes/footer.php'; ?>
 </div>
-<!-- ./wrapper -->
 
 <!-- Chart Data -->
 <?php
-  $and = 'AND YEAR(date) = '.$year;
-  $months = array();
-  $ontime = array();
-  $late = array();
-  for( $m = 1; $m <= 12; $m++ ) {
-    $sql = "SELECT * FROM presence WHERE MONTH(date) = '$m' AND status = 1 $and";
+$days = array();
+$ontime = array();
+$late = array();
+
+$daysInMonth = cal_days_in_month(CAL_GREGORIAN, $currentMonth, $currentYear);
+
+for ($d = 1; $d <= $daysInMonth; $d++) {
+    $date = $currentYear . '-' . str_pad($currentMonth, 2, '0', STR_PAD_LEFT) . '-' . str_pad($d, 2, '0', STR_PAD_LEFT);
+
+    // Ponctuels
+    $sql = "SELECT * FROM presence WHERE date = '$date' AND status = 1";
     $oquery = $conn->query($sql);
     array_push($ontime, $oquery->num_rows);
 
-    $sql = "SELECT * FROM presence WHERE MONTH(date) = '$m' AND status = 0 $and";
+    // Retardataires
+    $sql = "SELECT * FROM presence WHERE date = '$date' AND status = 0";
     $lquery = $conn->query($sql);
     array_push($late, $lquery->num_rows);
 
-    $num = str_pad( $m, 2, 0, STR_PAD_LEFT );
-    $month =  date('M', mktime(0, 0, 0, $m, 1));
-    array_push($months, $month);
-  }
+    array_push($days, $d);
+}
 
-  $months = json_encode($months);
-  $late = json_encode($late);
-  $ontime = json_encode($ontime);
+// Statistiques par semaine
+$weeks = ['Semaine 1', 'Semaine 2', 'Semaine 3', 'Semaine 4'];
+$ontime_weeks = [];
+$late_weeks = [];
 
+for ($week = 1; $week <= 4; $week++) {
+    $start_day = ($week - 1) * 7 + 1;
+    $end_day = min($week * 7, $daysInMonth);
+
+    // Ponctuels
+    $sql = "SELECT * FROM presence WHERE DAY(date) BETWEEN $start_day AND $end_day AND MONTH(date) = $currentMonth AND status = 1";
+    $oquery = $conn->query($sql);
+    array_push($ontime_weeks, $oquery->num_rows);
+
+    // Retardataires
+    $sql = "SELECT * FROM presence WHERE DAY(date) BETWEEN $start_day AND $end_day AND MONTH(date) = $currentMonth AND status = 0";
+    $lquery = $conn->query($sql);
+    array_push($late_weeks, $lquery->num_rows);
+}
+
+$weeks = json_encode($weeks);
+$ontime_weeks = json_encode($ontime_weeks);
+$late_weeks = json_encode($late_weeks);
 ?>
 <!-- End Chart Data -->
-<?php include 'includes/scripts.php'; ?>
-<script>
-$(function(){
-  var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
-  var pieChart = new Chart(pieChartCanvas)
-  var barChartData = {
-    labels  : <?php echo $months; ?>,
-    datasets: [
-      {
-        label               : 'Retard',
-        fillColor           : 'rgba(255, 0, 0, 5)',
-        strokeColor         : 'rgba(255, 0, 0, 5)',
-        pointColor          : 'rgba(255, 0, 0, 5)',
-        pointStrokeColor    : '#c1c7d1',
-        pointHighlightFill  : '#fff',
-        pointHighlightStroke: 'rgba(220,220,220,1)',
-        data                : <?php echo $late; ?>
-      },
-      {
-        label               : 'Ponctualité',
-        fillColor           : 'rgba(60,141,188,0.9)',
-        strokeColor         : 'rgba(60,141,188,0.8)',
-        pointColor          : '#3b8bba',
-        pointStrokeColor    : 'rgba(60,141,188,1)',
-        pointHighlightFill  : '#fff',
-        pointHighlightStroke: 'rgba(60,141,188,1)',
-        data                : <?php echo $ontime; ?>
-      }
-    ]
-  }
-  barChartData.datasets[1].fillColor   = '#00a65a'
-  barChartData.datasets[1].strokeColor = '#00a65a'
-  barChartData.datasets[1].pointColor  = '#00a65a'
-  var barChartOptions                  = {
-    //Boolean - Whether the scale should start at zero, or an order of magnitude down from the lowest value
-    scaleBeginAtZero        : true,
-    //Boolean - Whether grid lines are shown across the chart
-    scaleShowGridLines      : true,
-    //String - Colour of the grid lines
-    scaleGridLineColor      : 'rgba(0,0,0,.05)',
-    //Number - Width of the grid lines
-    scaleGridLineWidth      : 1,
-    //Boolean - Whether to show horizontal lines (except X axis)
-    scaleShowHorizontalLines: true,
-    //Boolean - Whether to show vertical lines (except Y axis)
-    scaleShowVerticalLines  : true,
-    //Boolean - If there is a stroke on each bar
-    barShowStroke           : true,
-    //Number - Pixel width of the bar stroke
-    barStrokeWidth          : 2,
-    //Number - Spacing between each of the X value sets
-    barValueSpacing         : 5,
-    //Number - Spacing between data sets within X values
-    barDatasetSpacing       : 1,
-    //String - A legend template
-    legendTemplate          : '<ul class="<%=name.toLowerCase()%>-legend"><% for (var i=0; i<datasets.length; i++){%><li><span style="background-color:<%=datasets[i].fillColor%>"></span><%if(datasets[i].label){%><%=datasets[i].label%><%}%></li><%}%></ul>',
-    //Boolean - whether to make the chart responsive
-    responsive              : true,
-    maintainAspectRatio     : true
-  }
 
-  barChartOptions.datasetFill = false
-  var myChart = pieChart.Bar(barChartData, barChartOptions)
-  document.getElementById('legend').innerHTML = myChart.generateLegend();
-});
-</script>
+<?php include 'includes/scripts.php'; ?>
+<script src="../bower_components/jquery/chart.js"></script>
 <script>
 $(function(){
-  $('#select_year').change(function(){
-    window.location.href = 'home.php?year='+$(this).val();
-  });
+    // Vérifier si les données sont bien transmises
+    console.log('Jours:', <?php echo $days; ?>);
+    console.log('Ponctuels par jour:', <?php echo $ontime; ?>);
+    console.log('Retardataires par jour:', <?php echo $late; ?>);
+    
+    // Graphique à barres
+    var barChartCanvas = $('#barChart').get(0).getContext('2d');
+    var barChartData = {
+        labels: <?php echo $days; ?>,
+        datasets: [
+            {
+                label: 'Retard',
+                backgroundColor: 'rgba(255, 99, 132, 0.8)',
+                borderColor: 'rgba(255, 99, 132, 1)',
+                borderWidth: 1,
+                data: <?php echo $late; ?>
+            },
+            {
+                label: 'Ponctualité',
+                backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                data: <?php echo $ontime; ?>
+            }
+        ]
+    };
+
+    var barChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: true, position: 'top' }
+        },
+        scales: {
+            x: { title: { display: true, text: 'Jours du Mois' } },
+            y: { title: { display: true, text: 'Nombre d\'agents' } }
+        }
+    };
+
+    new Chart(barChartCanvas, {
+        type: 'bar',
+        data: barChartData,
+        options: barChartOptions
+    });
+
+    // Graphique en donut
+    var donutChartCanvas = $('#donutChart').get(0).getContext('2d');
+    var donutChartData = {
+        labels: <?php echo $weeks; ?>,
+        datasets: [
+            {
+                label: 'Retard',
+                data: <?php echo $late_weeks; ?>,
+                backgroundColor: ['rgba(255, 99, 132, 0.8)', 'rgba(255, 159, 64, 0.8)', 'rgba(75, 192, 192, 0.8)', 'rgba(153, 102, 255, 0.8)']
+            },
+            {
+                label: 'Ponctualité',
+                data: <?php echo $ontime_weeks; ?>,
+                backgroundColor: ['rgba(54, 162, 235, 0.8)', 'rgba(255, 206, 86, 0.8)', 'rgba(255, 99, 132, 0.8)', 'rgba(75, 192, 192, 0.8)']
+            }
+        ]
+    };
+
+    var donutChartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: true, position: 'top' }
+        }
+    };
+
+    new Chart(donutChartCanvas, {
+        type: 'doughnut',
+        data: donutChartData,
+        options: donutChartOptions
+    });
+
+    // Mise à jour du mois
+    $('#select_month').change(function(){
+        window.location.href = 'home.php?month=' + $(this).val();
+    });
 });
 </script>
+
 </body>
 </html>
+
+<?php
+$days = array();
+$ontime = array();
+$late = array();
+
+$daysInMonth = cal_days_in_month(CAL_GREGORIAN, $currentMonth, $currentYear);
+
+for ($d = 1; $d <= $daysInMonth; $d++) {
+    $date = $currentYear . '-' . str_pad($currentMonth, 2, '0', STR_PAD_LEFT) . '-' . str_pad($d, 2, '0', STR_PAD_LEFT);
+
+    $sql = "SELECT * FROM presence WHERE date = '$date' AND status = 1";
+    $oquery = $conn->query($sql);
+    array_push($ontime, $oquery->num_rows);
+
+    $sql = "SELECT * FROM presence WHERE date = '$date' AND status = 0";
+    $lquery = $conn->query($sql);
+    array_push($late, $lquery->num_rows);
+
+    array_push($days, $d);
+}
+$days = json_encode($days);
+$late = json_encode($late);
+$ontime = json_encode($ontime);
+?>
+
+<script src="../bower_components/jquery/chart.js"></script>
+<script>
+$(function(){
+    var barChartCanvas = $('#barChart').get(0).getContext('2d');
+    new Chart(barChartCanvas, {
+        type: 'bar',
+        data: {
+            labels: <?php echo $days; ?>,
+            datasets: [{
+                label: 'Ponctualité',
+                backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                data: <?php echo $ontime; ?>
+            },{
+                label: 'Retard',
+                backgroundColor: 'rgba(255, 99, 132, 0.8)',
+                data: <?php echo $late; ?>
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Jours du Mois'
+                    }
+                },
+                y: {
+                    title: {
+                        display: true,
+                        text: 'Nombre d\'agents'
+                    }
+                }
+            }
+        }
+    });
+
+    var donutChartCanvas = $('#donutChart').get(0).getContext('2d');
+    new Chart(donutChartCanvas, {
+        type: 'doughnut',
+        data: {
+            labels: ['Semaine 1', 'Semaine 2', 'Semaine 3', 'Semaine 4'],
+            datasets: [{
+                data: [30, 50, 70, 90], // Replace with your week data
+                backgroundColor: ['rgba(255, 99, 132, 0.8)', 'rgba(54, 162, 235, 0.8)', 'rgba(75, 192, 192, 0.8)', 'rgba(153, 102, 255, 0.8)']
+            }]
+        }
+    });
+});
+</script>
+
+

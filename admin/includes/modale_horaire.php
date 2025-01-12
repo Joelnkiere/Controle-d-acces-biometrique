@@ -1,5 +1,5 @@
 <!-- Add -->
-<div class="modal fade" id="ajouter">
+<div class="modal fade" id="addnew">
     <div class="modal-dialog">
         <div class="modal-content">
           	<div class="modal-header">
@@ -29,8 +29,8 @@
                 </div>
           	</div>
           	<div class="modal-footer">
-            	<button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i>Annuler</button>
-            	<button type="submit" class="btn btn-primary btn-flat" name="ajouter"><i class="fa fa-save"></i>Enregistrer</button>
+            	<button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Fermer</button>
+            	<button type="submit" class="btn btn-primary btn-flat" name="add"><i class="fa fa-save"></i> Enregistrer</button>
             	</form>
           	</div>
         </div>
@@ -38,39 +38,39 @@
 </div>
 
 <!-- Edit -->
-<div class="modal fade" id="modifier">
+<div class="modal fade" id="edit">
     <div class="modal-dialog">
         <div class="modal-content">
           	<div class="modal-header">
             	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
               		<span aria-hidden="true">&times;</span></button>
-            	<h4 class="modal-title"><b>Modifier l'Horaire</b></h4>
+            	<h4 class="modal-title"><b>Modifier l'horaire</b></h4>
           	</div>
           	<div class="modal-body">
             	<form class="form-horizontal" method="POST" action="modifier_horaire.php">
             		<input type="hidden" id="timeid" name="id">
                 <div class="form-group">
-                    <label for="modifier_HeureEntree" class="col-sm-3 control-label">Heure d'Entrée</label>
+                    <label for="edit_time_in" class="col-sm-3 control-label">Heure d'entrée</label>
 
                     <div class="col-sm-9">
                       <div class="bootstrap-timepicker">
-                        <input type="text" class="form-control timepicker" id="modifier_HeureEntree" name="heure_entree">
+                        <input type="text" class="form-control timepicker" id="edit_time_in" name="heure_entree">
                       </div>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="modifier_HeureSortie" class="col-sm-3 control-label">Heure de Sortie</label>
+                    <label for="edit_time_out" class="col-sm-3 control-label">Heure de Sortie</label>
 
                     <div class="col-sm-9">
                       <div class="bootstrap-timepicker">
-                        <input type="text" class="form-control timepicker" id="modifier_HeureSortie" name="heure_sortie">
+                        <input type="text" class="form-control timepicker" id="edit_time_out" name="heure_sortie">
                       </div>
                     </div>
                 </div>
           	</div>
           	<div class="modal-footer">
-            	<button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Annuler</button>
-            	<button type="submit" class="btn btn-success btn-flat" name="modifier"><i class="fa fa-check-square-o"></i> Modifier</button>
+            	<button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Fermer</button>
+            	<button type="submit" class="btn btn-success btn-flat" name="edit"><i class="fa fa-check-square-o"></i> Modifier</button>
             	</form>
           	</div>
         </div>
@@ -78,7 +78,7 @@
 </div>
 
 <!-- Delete -->
-<div class="modal fade" id="supprimer">
+<div class="modal fade" id="delete">
     <div class="modal-dialog">
         <div class="modal-content">
           	<div class="modal-header">
@@ -88,15 +88,15 @@
           	</div>
           	<div class="modal-body">
             	<form class="form-horizontal" method="POST" action="supprimer_horaire.php">
-            		<input type="hidden" id="supprimer_IdHeure" name="id">
+            		<input type="hidden" id="del_timeid" name="id">
             		<div class="text-center">
-	                	<p>SUPPRIMER HORAIRE</p>
-	                	<h2 id="supprimer_horaire" class="bold"></h2>
+	                	<p>DELETE SCHEDULE</p>
+	                	<h2 id="del_schedule" class="bold"></h2>
 	            	</div>
           	</div>
           	<div class="modal-footer">
-            	<button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Annuler</button>
-            	<button type="submit" class="btn btn-danger btn-flat" name="supprimer"><i class="fa fa-trash"></i>Supprimer</button>
+            	<button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Fermer</button>
+            	<button type="submit" class="btn btn-danger btn-flat" name="delete"><i class="fa fa-trash"></i> Supprimer</button>
             	</form>
           	</div>
         </div>

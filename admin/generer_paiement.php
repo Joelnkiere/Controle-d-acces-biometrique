@@ -4,7 +4,7 @@
 	function generateRow($from, $to, $conn, $deduction){
 		$contents = '';
 	 	
-		$sql = "SELECT *, sum(nombre_heure) AS total_hr, presence.id_agent AS empid FROM presence LEFT JOIN agent ON agent.id=presence.id_agent LEFT JOIN poste ON poste.id=agent.id_poste WHERE date BETWEEN '$from' AND '$to' GROUP BY presence.id_agent ORDER BY agent.nom ASC, agent.prenom ASC";
+		$sql = "SELECT *, sum(nombre_heure) AS total_hr, presence.id_agent AS empid FROM presence LEFT JOIN agent ON agent.id=presence.id_agent LEFT JOIN poste ON poste.id_poste=agent.id_poste WHERE date BETWEEN '$from' AND '$to' GROUP BY presence.id_agent ORDER BY agent.nom ASC, agent.prenom ASC";
 
 		$query = $conn->query($sql);
 		$total = 0;

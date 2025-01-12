@@ -63,7 +63,7 @@
                       echo "
                         <tr>
                           <td>".$row['motif']."</td>
-                          <td>".number_format($row['montant'], 2)."</td>
+                          <td>".number_format($row['montant'], 2)." $"."</td>
                           <td>
                             <button class='btn btn-primary btn-sm modifier btn-flat pull-right' data-id='".$row['id']."'><i class='fa fa-edit'></i></button>
                             <button class='btn btn-danger btn-sm supprimer btn-flat pull-right' data-id='".$row['id']."'><i class='fa fa-trash'></i></button>

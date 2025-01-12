@@ -1,7 +1,7 @@
 <?php 
 	include 'includes/session.php';
 
-	if(isset($_POST['id_horaire'])){
+	if(isset($_POST['id'])){
 		$id = $_POST['id'];
 		$sql = "SELECT * FROM horaire WHERE id = '$id'";
 		$query = $conn->query($sql);

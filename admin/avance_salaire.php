@@ -70,7 +70,7 @@
                           <td>".date('d M, Y', strtotime($row['date_avance']))."</td>
                           <td>".$row['empid']."</td>
                           <td>".$row['nom'].' '.$row['prenom']."</td>
-                          <td>".number_format($row['montant'], 2)."</td>
+                          <td>".number_format($row['montant'], 2)." $"."</td>
                           <td>
                             <button class='btn btn-primary btn-sm modifier btn-flat pull-right' data-id='".$row['caid']."'><i class='fa fa-edit'></i></button>
                             <button class='btn btn-danger btn-sm supprimer btn-flat pull-right' data-id='".$row['caid']."'><i class='fa fa-trash'></i></button>

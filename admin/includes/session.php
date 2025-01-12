@@ -1,5 +1,9 @@
 <?php
-	session_start();
+	// Dans le fichier session.php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();  // Démarre la session uniquement si aucune session n'est active
+}
+
 	include 'includes/conn.php';
 
 	if(!isset($_SESSION['admin']) || trim($_SESSION['admin']) == ''){

@@ -26,7 +26,7 @@
           echo "
             <div class='alert alert-danger alert-dismissible'>
               <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
-              <h4><i class='icon fa fa-warning'></i> Erreur de l'operation!</h4>
+              <h4><i class='icon fa fa-warning'></i> Echec de l'operation!</h4>
               ".$_SESSION['error']."
             </div>
           ";
@@ -36,7 +36,7 @@
           echo "
             <div class='alert alert-success alert-dismissible'>
               <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
-              <h4><i class='icon fa fa-check'></i> operation reussie!</h4>
+              <h4><i class='icon fa fa-check'></i> Operation reussie!</h4>
               ".$_SESSION['success']."
             </div>
           ";
@@ -68,7 +68,7 @@
                           <td>".$row['nom'].' '.$row['prenom']."</td>
                           <td>".date('h:i A', strtotime($row['heure_entree'])).' - '.date('h:i A', strtotime($row['heure_sortie']))."</td>
                           <td>
-                            <button class='btn btn-primary btn-sm modifier btn-flat pull-right' data-id='".$row['empid']."'><i class='fa fa-edit'></i></button>
+                            <button class='btn btn-primary btn-sm edit btn-flat' data-id='".$row['empid']."'><i class='fa fa-edit'></i></button>
                           </td>
                         </tr>
                       ";
@@ -89,9 +89,9 @@
 <?php include 'includes/scripts.php'; ?>
 <script>
 $(function(){
-  $('.modifier').click(function(e){
+  $('.edit').click(function(e){
     e.preventDefault();
-    $('#modifier').modal('show');
+    $('#edit').modal('show');
     var id = $(this).data('id');
     getRow(id);
   });
@@ -100,13 +100,13 @@ $(function(){
 function getRow(id){
   $.ajax({
     type: 'POST',
-    url: 'line_horaire_agent.php',
+    url: 'ligne_horaire_agent.php',
     data: {id:id},
     dataType: 'json',
     success: function(response){
-      $('.nom_agent').html(response.nom+' '+response.prenom);
-      $('#horaire_val').val(response.id_horaire);
-      $('#horaire_val').html(response.heure_entree+' '+response.heure_sortie);
+      $('.employee_name').html(response.nom+' '+response.prenom);
+      $('#schedule_val').val(response.id_horaire);
+      $('#schedule_val').html(response.heure_entree+' '+response.heure_sortie);
       $('#empid').val(response.empid);
     }
   });

@@ -11,11 +11,11 @@
     <!-- Content Header (Page header) -->
     <section class="content-header">
       <h1>
-        Presence
+        Présences du jour
       </h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> Home</a></li>
-        <li class="active">Presence</li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> Accueil</a></li>
+        <li class="active">Présences du jour</li>
       </ol>
     </section>
     <!-- Main content -->
@@ -26,7 +26,7 @@
             <div class='alert alert-danger alert-dismissible'>
               <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
               <h4><i class='icon fa fa-warning'></i> Erreur!</h4>
-              ".$_SESSION['error']."
+              ".$_SESSION['error']." 
             </div>
           ";
           unset($_SESSION['error']);
@@ -35,8 +35,8 @@
           echo "
             <div class='alert alert-success alert-dismissible'>
               <button type='button' class='close' data-dismiss='alert' aria-hidden='true'>&times;</button>
-              <h4><i class='icon fa fa-check'></i> Succes!</h4>
-              ".$_SESSION['success']."
+              <h4><i class='icon fa fa-check'></i> Succès!</h4>
+              ".$_SESSION['success']." 
             </div>
           ";
           unset($_SESSION['success']);
@@ -52,30 +52,30 @@
                   <th class="hidden"></th>
                   <th>Date</th>
                   <th>ID Agent</th>
-                  <th>Nom agent</th>
+                  <th>Nom Agent</th>
                   <th>Heure Entrée</th>
                   <th>Heure Sortie</th>
                   <th>Action</th>
                 </thead>
                 <tbody>
                   <?php
-                    $sql = "SELECT *, agent.id_agent AS empid, presence.id AS attid FROM presence LEFT JOIN agent ON agent.id=presence.id_agent ORDER BY presence.date DESC, presence.heure_entree DESC";
+                    // Sélectionner uniquement les présences d'aujourd'hui
+                    $today = date('Y-m-d');  // Obtenir la date du jour au format 'YYYY-MM-DD'
+                    $sql = "SELECT *, agent.id_agent AS empid, presence.id AS attid 
+                            FROM presence 
+                            LEFT JOIN agent ON agent.id=presence.id_agent 
+                            WHERE presence.date = '$today' 
+                            ORDER BY presence.heure_entree DESC";
                     $query = $conn->query($sql);
                     while($row = $query->fetch_assoc()){
-                      // if($row['status']=='0'){
-                      //   $status='<span class="label label-danger pull-right">retard</span>';
-                      // }else{
-                      //   $status='<span class="label label-success pull-right">ponctuel</span>';
-                      // }
-                      //$status = ($row['status'])?'<span class="label label-danger pull-right">retard</span>':'<span class="label label-success pull-right">ponctuel</span>';
                       echo "
                         <tr>
                           <td class='hidden'></td>
-                          <td>".date('M d, Y', strtotime($row['date']))."</td>
+                          <td>".date('d M, Y', strtotime($row['date']))."</td>
                           <td>".$row['empid']."</td>
                           <td>".$row['nom'].' '.$row['prenom']."</td>
-                          <td>".date('h:i A', strtotime($row['heure_entree']))."</td>
-                          <td>".date('h:i A', strtotime($row['heure_sortie']))."</td>
+                          <td>".date('H:i', strtotime($row['heure_entree']))."</td> <!-- Format 24H pour l'heure entrée -->
+                          <td>".date('H:i', strtotime($row['heure_sortie']))."</td> <!-- Format 24H pour l'heure sortie -->
                           <td>
                             <button class='btn btn-success btn-sm btn-flat edit' data-id='".$row['attid']."'><i class='fa fa-edit'></i> Edit</button>
                             <button class='btn btn-danger btn-sm btn-flat delete' data-id='".$row['attid']."'><i class='fa fa-trash'></i> Delete</button>

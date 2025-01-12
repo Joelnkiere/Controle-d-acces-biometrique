@@ -1,7 +1,7 @@
 <?php
 	include 'includes/session.php';
 
-	if(isset($_POST['modifier'])){
+	if(isset($_POST['edit'])){
 		$empid = $_POST['id'];
 		$sched_id = $_POST['horaire'];
 		
@@ -15,7 +15,7 @@
 
 	}
 	else{
-		$_SESSION['error'] = 'veillez selectionner un iteme!';
+		$_SESSION['error'] = 'veillez selectionner l\'horaire à modifier!';
 	}
 
 	header('location: horaire_agent.php');

@@ -33,7 +33,7 @@
                     <label for="montant" class="col-sm-3 control-label">Montant</label>
 
                     <div class="col-sm-9">
-                      <input type="text" class="form-control" id="montant" name="montant" required>
+                      <input type="text" class="form-control" id="montant" name="montant"  placeholder=" Saisir le montant en $" required>
                     </div>
                 </div>
           	</div>
@@ -62,7 +62,7 @@
                     <label for="modifier_montant" class="col-sm-3 control-label">Montant</label>
 
                     <div class="col-sm-9">
-                      <input type="text" class="form-control" id="modifier_montant" name="montant" required>
+                      <input type="text" class="form-control" id="modifier_montant" name="montant" placeholder=" Saisir le montant en $" required>
                     </div>
                 </div>
           	</div>

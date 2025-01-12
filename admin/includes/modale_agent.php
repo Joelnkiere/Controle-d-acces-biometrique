@@ -456,7 +456,89 @@
     </div>
 </div>
 
+<!-- <div class="modal fade" id="empreinte">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title"><b>Enregistrement de l'empreinte digitale</b></h4>
+      </div>
+      <div class="modal-body text-center">
+        <!-- Zone pour l'empreinte 
+        <div class="fingerprint-container">
+        <!-- <div id="fingerprint-progress" class="fingerprint"></div> --
+          <i class="fa fa-fingerprint fingerprint-icon"></i>
+        </div>
+        <p id="status" class="text-info mt-3">Placez votre doigt sur le capteur...</p>
+
+        <form class="form-horizontal" method="POST" action="ajout_empreinte.php">
+          <input type="hidden" id="empreinte_empid" name="id">
+
+          <div class="form-group">
+           
+            <div class="col-sm-9">
+            <input type="hidden" id="fingerprint-data" name="empreinte" value="">
+            </div>
+          </div>
+        </form>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal"><i class="fa fa-close"></i> Annuler</button>
+        <button type="submit" class="btn btn-primary btn-flat" id="save-fingerprint" name="enregistrer"><i class="fa fa-save"></i> Enregistrer</button>
+      </div>
+
+      
+    </div>
+  </div>
+</div> -->
+
+
+
+
 <!-- Styles pour l'impression afin de conserver le design -->
+
+<div class="modal fade" id="empreinte">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h4 class="modal-title"><b>Ajouter une empreinte digitale</b></h4>
+      </div>
+      <div class="modal-body text-center">
+      <div class="fingerprint-container">
+        <!-- <div id="fingerprint-progress" class="fingerprint"></div> -->
+          <i class="fa fa-fingerprint fingerprint-icon"></i>
+        </div>
+        <p id="status" class="text-info mt-3">Placez votre doigt sur le capteur...</p>
+
+        <form class="form-horizontal" method="POST" action="ajout_empreinte.php">
+          <input type="hidden" id="empreinte_empid" name="id">
+
+          <div class="form-group">
+            <label for="empreinte" class="col-sm-3 control-label">Empreinte</label>
+            <div class="col-sm-9">
+              <input type="hidden" class="form-control" id="empreinte" name="empreinte">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default btn-flat pull-left" data-dismiss="modal">
+          <i class="fa fa-close"></i> Annuler
+        </button>
+        <button type="submit" class="btn btn-primary btn-flat" name="enregistrer">
+          <i class="fa fa-save"></i> Enregistrer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <style>
     @media print {
         body * {
@@ -479,4 +561,134 @@
             background-color: white;
         }
     }
+
+   
+
+    .fingerprint-container {
+  width: 150px;
+  height: 150px;
+  margin: 20px auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 5px solid #003366; /* Cercle bleu */
+  border-radius: 50%; /* Cercle parfait */
+  background-color: #f5f5f5; /* Fond gris clair */
+}
+
+.fingerprint-icon {
+  font-size: 80px; /* Taille de l'icône */
+  color: #003366; /* Couleur de l'icône */
+  animation: pulse 2s infinite; /* Animation pulsante */
+}
+
+#status {
+  font-size: 16px;
+  color: #666;
+}
+
+/* Animation pulsante pour simuler une lecture */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
 </style>
+<script>
+// $(document).ready(function () {
+//   let progress = 0;
+
+//   // Simulation de la progression
+//   function startFingerprintScan() {
+//     progress = 0;
+//     $('#status').text('Placez votre doigt sur le capteur...');
+//     $('#fingerprint-progress').removeClass('completed');
+//     let interval = setInterval(() => {
+//       progress += 10; // Augmente la progression par 10%
+
+//       if (progress >= 100) {
+//         clearInterval(interval);
+//         $('#fingerprint-progress').addClass('completed');
+//         $('#status').text('Empreinte capturée avec succès!');
+//         $('#save-fingerprint').prop('disabled', false);
+//       } else {
+//         $('#fingerprint-progress').css(
+//           'background',
+//           `conic-gradient(#003366 ${progress}%, #ccc ${progress}%)`
+//         );
+//       }
+//     }, 500); // Intervalle de 500 ms pour simuler la progression
+//   }
+
+//   // Initialisation lors de l'ouverture du modal
+//   $('#empreinte').on('show.bs.modal', function () {
+//     $('#save-fingerprint').prop('disabled', true); // Désactive le bouton jusqu'à la fin
+//     startFingerprintScan();
+//   });
+
+//   // Gérer le bouton "Enregistrer"
+//   $('#save-fingerprint').click(function () {
+//     alert('Empreinte enregistrée!'); // Ajoutez ici la logique d'enregistrement côté serveur
+//     $('#empreinte').modal('hide');
+//   });
+// });
+
+// document.getElementById('save-fingerprint').addEventListener('click', function () {
+//   const statusElement = document.getElementById('status');
+//   const fingerprintIcon = document.querySelector('.fingerprint-icon');
+
+//   // Simuler un processus d'enregistrement avec un délai
+//   statusElement.textContent = 'Enregistrement en cours...';
+//   statusElement.classList.remove('text-info');
+//   statusElement.classList.add('text-warning');
+
+//   setTimeout(() => {
+//     statusElement.textContent = 'Empreinte enregistrée avec succès !';
+//     statusElement.classList.remove('text-warning');
+//     statusElement.classList.add('text-success');
+
+//     fingerprintIcon.style.color = 'green'; // Changer la couleur de l'icône pour indiquer la réussite
+//     fingerprintIcon.style.animation = 'none'; // Arrêter l'animation
+//   }, 3000); // Simule un délai de 3 secondes
+// });
+
+document.getElementById('save-fingerprint').addEventListener('click', function () {
+  const statusElement = document.getElementById('status');
+  const fingerprintIcon = document.querySelector('.fingerprint-icon');
+  const fingerprintInput = document.getElementById('fingerprint-data');
+
+  // Simuler un processus d'enregistrement
+  statusElement.textContent = 'Enregistrement en cours...';
+  statusElement.classList.remove('text-info');
+  statusElement.classList.add('text-warning');
+
+  setTimeout(() => {
+    // Simuler une empreinte générée
+    const fingerprintSample = 'empreinte123456'; // Exemple d'empreinte générée
+
+    // Mettre à jour le champ invisible avec l'empreinte
+    fingerprintInput.value = fingerprintSample;
+
+    // Mise à jour du statut
+    statusElement.textContent = 'Empreinte enregistrée avec succès !';
+    statusElement.classList.remove('text-warning');
+    statusElement.classList.add('text-success');
+
+    // Indiquer la réussite visuellement
+    fingerprintIcon.style.color = 'green';
+    fingerprintIcon.style.animation = 'none';
+  }, 3000); // Délai de simulation de 3 secondes
+});
+
+
+</script>

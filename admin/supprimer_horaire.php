@@ -1,18 +1,18 @@
 <?php
 	include 'includes/session.php';
 
-	if(isset($_POST['supprimer'])){
+	if(isset($_POST['delete'])){
 		$id = $_POST['id'];
 		$sql = "DELETE FROM horaire WHERE id = '$id'";
 		if($conn->query($sql)){
-			$_SESSION['success'] = 'Horaire supprimé avec succès!';
+			$_SESSION['success'] = 'Schedule deleted successfully';
 		}
 		else{
 			$_SESSION['error'] = $conn->error;
 		}
 	}
 	else{
-		$_SESSION['error'] = 'veillez selectionner un iteme!';
+		$_SESSION['error'] = 'Select item to delete first';
 	}
 
 	header('location: horaire.php');

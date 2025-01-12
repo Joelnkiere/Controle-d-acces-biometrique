@@ -87,6 +87,9 @@
                             <button class="btn toggle-status btn-flat <?php echo ($row['status'] == 'actif') ? 'btn-success' : 'btn-danger'; ?>" data-id="<?php echo $row['empid']; ?>" data-status="<?php echo $row['status']; ?>">
                             <i class="fa <?php echo ($row['status'] == 'actif') ? 'fa-toggle-on' : 'fa-toggle-off'; ?>"></i>
                             </button>
+                            <button class="btn btn-info btn-sm empreinte btn-flat" data-id="<?php echo $row['empid']; ?>">
+                            <i class="fa-solid fa-fingerprint"></i>
+                            </button>
                           </td>
                         </tr>
                       <?php
@@ -283,6 +286,14 @@ function generateQRCode(agentData) {
         document.body.innerHTML = originalContents;
     });
 
+$(function () {
+  $('.empreinte').click(function (e) {
+    e.preventDefault();
+    $('#empreinte').modal('show');
+    var id = $(this).data('id');
+    $('#empreinte_empid').val(id); // Envoi de l'ID de l'agent
+  });
+});
 
 </script>
 
