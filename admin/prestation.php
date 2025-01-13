@@ -5,32 +5,9 @@ include 'includes/header.php';
 // Définir la locale en français pour l'affichage des dates et mois
 setlocale(LC_TIME, 'fr_FR.UTF-8', 'fr_FR', 'fr'); 
 
-// Initialiser les dates
-$start_date = isset($_POST['start_date']) ? $_POST['start_date'] : date('Y-m-01'); // Par défaut, premier jour du mois
-$end_date = isset($_POST['end_date']) ? $_POST['end_date'] : date('Y-m-t'); // Par défaut, dernier jour du mois
-
-// Calcul des heures prestées pour chaque agent dans la période donnée
-function get_total_hours($agent_id, $start_date, $end_date, $conn) {
-    // Requête pour obtenir les heures d'entrée et de sortie dans la période
-    $sql = "SELECT p.heure_entree, p.heure_sortie 
-            FROM presence p 
-            WHERE p.id_agent = '$agent_id' 
-            AND p.date BETWEEN '$start_date' AND '$end_date' 
-            AND p.heure_sortie != '00:00:00'";
-    $query = $conn->query($sql);
-    
-    $total_hours = 0;
-    
-    while ($row = $query->fetch_assoc()) {
-        // Calcul de la différence entre l'heure d'entrée et l'heure de sortie
-        $time_in = strtotime($row['heure_entree']);
-        $time_out = strtotime($row['heure_sortie']);
-        if ($time_in && $time_out) {
-            $total_hours += ($time_out - $time_in) / 3600; // Convertir la différence en heures
-        }
-    }
-    return number_format($total_hours, 2);
-}
+// Initialiser les dates par défaut (mois en cours)
+$start_date = isset($_POST['start_date']) ? $_POST['start_date'] : date('Y-m-01'); // Premier jour du mois
+$end_date = isset($_POST['end_date']) ? $_POST['end_date'] : date('Y-m-t'); // Dernier jour du mois
 ?>
 
 <body class="hold-transition skin-black sidebar-mini">
@@ -43,15 +20,13 @@ function get_total_hours($agent_id, $start_date, $end_date, $conn) {
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <section class="content-header">
-      <h1>
-        Heures Prestées des Agents
-      </h1>
+      <h1>Heures Prestées des Agents</h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i> Accueil</a></li>
         <li class="active">Heures Prestées</li>
       </ol>
     </section>
-    
+
     <!-- Main content -->
     <section class="content">
       <!-- Formulaire pour choisir la période -->
@@ -71,12 +46,13 @@ function get_total_hours($agent_id, $start_date, $end_date, $conn) {
           </div>
         </div>
       </form>
-      
+
+      <!-- Table des agents et heures prestées -->
       <div class="row">
         <div class="col-xs-12">
           <div class="box">
             <div class="box-body">
-              <table id="example1" class="table table-bordered">
+              <table id="example1" class="table table-bordered table-striped">
                 <thead>
                   <th>ID Agent</th>
                   <th>Nom Agent</th>
@@ -84,21 +60,29 @@ function get_total_hours($agent_id, $start_date, $end_date, $conn) {
                 </thead>
                 <tbody>
                   <?php
-                    // Récupérer tous les agents
-                    $sql_agents = "SELECT id_agent, prenom, nom FROM agent";
-                    $query_agents = $conn->query($sql_agents);
-                    
-                    while ($agent = $query_agents->fetch_assoc()) {
-                        // Récupérer le total des heures prestées pour chaque agent
-                        $total_hours = get_total_hours($agent['id_agent'], $start_date, $end_date, $conn);
-                        echo "
-                            <tr>
-                              <td>{$agent['id_agent']}</td>
-                              <td>{$agent['prenom']} {$agent['nom']}</td>
-                              <td>{$total_hours} heures</td>
-                            </tr>
-                        ";
-                    }
+                  // Requête pour récupérer les agents avec le total des heures prestées
+                  $sql = "SELECT a.id_agent, a.prenom, a.nom, SUM(p.nombre_heure) AS total_heure 
+                          FROM agent a 
+                          LEFT JOIN presence p ON a.id = p.id_agent 
+                          WHERE p.date BETWEEN '$start_date' AND '$end_date' 
+                          GROUP BY a.id_agent, a.prenom, a.nom 
+                          ORDER BY a.nom ASC, a.prenom ASC";
+                  $query = $conn->query($sql);
+
+                  if ($query->num_rows > 0) {
+                      while ($row = $query->fetch_assoc()) {
+                        $total_hours = $row['total_heure'] ? round($row['total_heure']) : 0;
+                          echo "
+                              <tr>
+                                <td>{$row['id_agent']}</td>
+                                <td>{$row['prenom']} {$row['nom']}</td>
+                                <td>{$total_hours} heures</td>
+                              </tr>
+                          ";
+                      }
+                  } else {
+                      echo "<tr><td colspan='3' class='text-center'>Aucun agent trouvé ou aucune heure prestée pour cette période</td></tr>";
+                  }
                   ?>
                 </tbody>
               </table>

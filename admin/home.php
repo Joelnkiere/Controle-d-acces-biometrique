@@ -1,6 +1,7 @@
 <?php include 'includes/session.php'; ?>
 <?php 
   include '../timezone.php'; 
+  setlocale(LC_TIME, 'fr_FR.UTF-8', 'fr_FR', 'fr'); 
   $today = date('Y-m-d');
   $currentMonth = date('m');
   $currentYear = date('Y');
@@ -59,7 +60,7 @@
                 $query = $conn->query($sql);
                 $early = $query->num_rows;
                 
-                $percentage = ($early/$total)*100;
+                $percentage = $total > 0 ? ($early / $total) * 100 : 0;
 
                 echo "<h3>".number_format($percentage, 2)."<sup style='font-size: 20px'>%</sup></h3>";
               ?>
@@ -81,7 +82,7 @@
                 $sql = "SELECT * FROM presence WHERE date = '$today' AND status = 1";
                 $query = $conn->query($sql);
 
-                echo "<h3>".$query->num_rows."</h3>"
+                echo "<h3>".$query->num_rows."</h3>";
               ?>
              
               <p>Agents Ponctuels</p>
@@ -101,7 +102,7 @@
                 $sql = "SELECT * FROM presence WHERE date = '$today' AND status = 0";
                 $query = $conn->query($sql);
 
-                echo "<h3>".$query->num_rows."</h3>"
+                echo "<h3>".$query->num_rows."</h3>";
               ?>
 
               <p>Retardateurs</p>
@@ -138,7 +139,7 @@
                         <div class="box-body">
                             <div class="row">
                                 <!-- Premier graphique : Barres -->
-                                <div class="col-md-8">
+                                <div class="col-md-10">
                                     <h4>Statistiques par Jour</h4>
                                     <div class="chart" style="max-width: 100%; height: 300px;">
                                         <canvas id="barChart"></canvas>
@@ -146,7 +147,7 @@
                                 </div>
 
                                 <!-- Deuxième graphique : Donut -->
-                                <div class="col-md-4">
+                                <div class="col-md-2">
                                     <h4>Statistiques par Semaine</h4>
                                     <div class="chart" style="max-width: 100%; height: 300px;">
                                         <canvas id="donutChart"></canvas>
@@ -165,21 +166,18 @@
 
 <!-- Chart Data -->
 <?php
-$days = array();
-$ontime = array();
-$late = array();
+$days = [];
+$ontime = [];
+$late = [];
 
 $daysInMonth = cal_days_in_month(CAL_GREGORIAN, $currentMonth, $currentYear);
-
 for ($d = 1; $d <= $daysInMonth; $d++) {
     $date = $currentYear . '-' . str_pad($currentMonth, 2, '0', STR_PAD_LEFT) . '-' . str_pad($d, 2, '0', STR_PAD_LEFT);
 
-    // Ponctuels
     $sql = "SELECT * FROM presence WHERE date = '$date' AND status = 1";
     $oquery = $conn->query($sql);
     array_push($ontime, $oquery->num_rows);
 
-    // Retardataires
     $sql = "SELECT * FROM presence WHERE date = '$date' AND status = 0";
     $lquery = $conn->query($sql);
     array_push($late, $lquery->num_rows);
@@ -187,7 +185,6 @@ for ($d = 1; $d <= $daysInMonth; $d++) {
     array_push($days, $d);
 }
 
-// Statistiques par semaine
 $weeks = ['Semaine 1', 'Semaine 2', 'Semaine 3', 'Semaine 4'];
 $ontime_weeks = [];
 $late_weeks = [];
@@ -196,17 +193,18 @@ for ($week = 1; $week <= 4; $week++) {
     $start_day = ($week - 1) * 7 + 1;
     $end_day = min($week * 7, $daysInMonth);
 
-    // Ponctuels
-    $sql = "SELECT * FROM presence WHERE DAY(date) BETWEEN $start_day AND $end_day AND MONTH(date) = $currentMonth AND status = 1";
+    $sql = "SELECT * FROM presence WHERE DAY(date) BETWEEN $start_day AND $end_day AND MONTH(date) = $currentMonth AND YEAR(date) = $currentYear AND status = 1";
     $oquery = $conn->query($sql);
     array_push($ontime_weeks, $oquery->num_rows);
 
-    // Retardataires
-    $sql = "SELECT * FROM presence WHERE DAY(date) BETWEEN $start_day AND $end_day AND MONTH(date) = $currentMonth AND status = 0";
+    $sql = "SELECT * FROM presence WHERE DAY(date) BETWEEN $start_day AND $end_day AND MONTH(date) = $currentMonth AND YEAR(date) = $currentYear AND status = 0";
     $lquery = $conn->query($sql);
     array_push($late_weeks, $lquery->num_rows);
 }
 
+$days = json_encode($days);
+$ontime = json_encode($ontime);
+$late = json_encode($late);
 $weeks = json_encode($weeks);
 $ontime_weeks = json_encode($ontime_weeks);
 $late_weeks = json_encode($late_weeks);
@@ -217,16 +215,18 @@ $late_weeks = json_encode($late_weeks);
 <script src="../bower_components/jquery/chart.js"></script>
 <script>
 $(function(){
-    // Vérifier si les données sont bien transmises
-    console.log('Jours:', <?php echo $days; ?>);
-    console.log('Ponctuels par jour:', <?php echo $ontime; ?>);
-    console.log('Retardataires par jour:', <?php echo $late; ?>);
-    
     // Graphique à barres
     var barChartCanvas = $('#barChart').get(0).getContext('2d');
     var barChartData = {
         labels: <?php echo $days; ?>,
         datasets: [
+            {
+                label: 'Ponctualité',
+                backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1,
+                data: <?php echo $ontime; ?>
+            },
             {
                 label: 'Retard',
                 backgroundColor: 'rgba(255, 99, 132, 0.8)',
@@ -379,5 +379,7 @@ $(function(){
     });
 });
 </script>
+
+
 
 
